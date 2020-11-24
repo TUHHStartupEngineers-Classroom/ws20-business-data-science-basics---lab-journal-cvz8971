@@ -166,10 +166,16 @@ sales_by_year_cat_1_tbl %>%
 
 
 # 7.0 Writing Files ----
-
 # 7.1 Excel ----
+install.packages("writexl")
+library("writexl")
+bike_orderlines_wrangled_tbl %>%
+  write_xlsx("DS_101/00_data/01_bike_sales/02_wrangled_data/bike_orderlines.xlsx")
 
 # 7.2 CSV ----
+bike_orderlines_wrangled_tbl %>% 
+  write_csv("DS_101/00_data/01_bike_sales/02_wrangled_data/bike_orderlines.csv")
 
 # 7.3 RDS ----
-
+bike_orderlines_wrangled_tbl %>% 
+  write_rds("DS_101/00_data/01_bike_sales/02_wrangled_data/bike_orderlines.rds")
