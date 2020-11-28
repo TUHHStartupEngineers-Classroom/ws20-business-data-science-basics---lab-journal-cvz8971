@@ -20,7 +20,7 @@ bikeshops_tbl  <- read_excel("DS_101/00_data/01_bike_sales/01_raw_data/bikeshops
 
 # 4.0 Joining Data ----
 # by automatically detecting a common column, if any ...
-left_join(orderlines_tbl, bikes_tbl)
+#left_join(orderlines_tbl, bikes_tbl)
 # If the data has no common column name, you can provide each column name in the "by" argument. For example, by = c("a" = "b") will match x.a to y.b. The order of the columns has to match the order of the tibbles).
 left_join(orderlines_tbl, bikes_tbl, by = c("product.id" = "bike.id"))
 # Chaining commands with the pipe and assigning it to order_items_joined_tbl

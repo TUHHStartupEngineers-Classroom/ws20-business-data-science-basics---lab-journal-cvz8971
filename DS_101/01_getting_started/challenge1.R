@@ -1,7 +1,21 @@
+pkgs_cran <- c(
+  "fs",         # working with the file system
+  "readxl",     # reading excel files
+  "writexl",    # saving data as excel files
+  "tidyverse",  # dplyr, ggplot2, tibble, tidyr, readr, purrr, stringr, forcats
+  "lubridate",  # working with dates and times
+  "devtools"    # used to install non-CRAN packages
+)
+install.packages(pkgs_cran)  
+
 # CHALLENGE 1
 # load libraries ----
+library("writexl")
+library("fs")
+library("devtools")
 library(tidyverse)
 library(readxl)
+library(lubridate)
 
 # import files ----
 bikes_tbl      <- read_excel(path = "DS_101/00_data/01_bike_sales/01_raw_data/bikes.xlsx")
@@ -68,7 +82,6 @@ glimpse(bike_orderlines_joined_tbl)
 glimpse(bikeshop_orderlines_wrangled_tbl)
 
 # Sales by Year ----
-library(lubridate)
 # Manipulate
 sales_by_location_tbl <- bikeshop_orderlines_wrangled_tbl %>%
   
@@ -93,7 +106,6 @@ sales_by_location_tbl <- bikeshop_orderlines_wrangled_tbl %>%
 sales_by_location_tbl
 
 # Visualize
-#{r plot, fig.width=10, fig.height=7}
 sales_by_location_tbl %>%
   
   # Setup canvas with the columns year (x-axis) and sales (y-axis)
@@ -163,11 +175,8 @@ sales_by_year_state_tbl %>%
     fill = "Sate" # Changes the legend name
   )
 
-
 # Writing Files ----
 # Excel
-install.packages("writexl")
-library("writexl")
 bikeshop_orderlines_wrangled_tbl %>%
   write_xlsx("DS_101/00_data/01_bike_sales/02_wrangled_data/bikeshop_orderlines.xlsx")
 

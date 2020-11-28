@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Nele Helena Thomsen" />
+
+<meta name="date" content="2020-11-23" />
+
+<title>Journal (reproducible report)</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">MyLabJournal</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="journal.html">Journal</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Class notes
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dictionary.html">Dictionary</a>
+    </li>
+    <li>
+      <a href="data_wrangling.html">Data Wrangling</a>
+    </li>
+    <li>
+      <a href="ggplot_graphs.html">ggplot graphs</a>
+    </li>
+    <li>
+      <a href="machine_learning.html">machine learning</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Journal (reproducible report)</h1>
+<h4 class="author">Nele Helena Thomsen</h4>
+<h4 class="date">2020-11-23</h4>
+
+</div>
+
+
+<p><strong>IMPORTANT:</strong> You can delete everything in here and start fresh. You might want to start by not deleting anything above this line until you know what that stuff is doing.</p>
+<p>This is an <code>.Rmd</code> file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a # in front of your text, it will create a top level-header.</p>
+<div id="my-first-post" class="section level1">
+<h1><span class="header-section-number">1</span> My first post</h1>
+<p>Last compiled: 2020-11-28</p>
+<pre class="r"><code>pkgs_cran &lt;- c(
+  &quot;fs&quot;,         # working with the file system
+  &quot;readxl&quot;,     # reading excel files
+  &quot;writexl&quot;,    # saving data as excel files
+  &quot;tidyverse&quot;,  # dplyr, ggplot2, tibble, tidyr, readr, purrr, stringr, forcats
+  &quot;lubridate&quot;,  # working with dates and times
+  &quot;devtools&quot;    # used to install non-CRAN packages
+)
+install.packages(pkgs_cran)  </code></pre>
+<pre><code>## Error in install.packages : Updating loaded packages</code></pre>
+<pre class="r"><code># CHALLENGE 1
+# load libraries ----
+library(&quot;writexl&quot;)
+library(&quot;fs&quot;)
+library(&quot;devtools&quot;)
+library(tidyverse)
+library(readxl)
+library(lubridate)
+
+# import files ----
+bikes_tbl      &lt;- read_excel(path = &quot;DS_101/00_data/01_bike_sales/01_raw_data/bikes.xlsx&quot;)
+orderlines_tbl &lt;- read_excel(&quot;DS_101/00_data/01_bike_sales/01_raw_data/orderlines.xlsx&quot;)
+bikeshops_tbl  &lt;- read_excel(&quot;DS_101/00_data/01_bike_sales/01_raw_data/bikeshops.xlsx&quot;)
+
+# examine data ----
+#bikeshops_tbl
+#glimpse(bikeshops_tbl)
+
+# join data ----
+left_join(orderlines_tbl, bikeshops_tbl, by = c(&quot;customer.id&quot; = &quot;bikeshop.id&quot;))</code></pre>
+<pre><code>## # A tibble: 15,644 x 11
+##    ...1  order.id order.line order.date          customer.id
+##    &lt;chr&gt;    &lt;dbl&gt;      &lt;dbl&gt; &lt;dttm&gt;                    &lt;dbl&gt;
+##  1 1            1          1 2015-01-07 00:00:00           2
+##  2 2            1          2 2015-01-07 00:00:00           2
+##  3 3            2          1 2015-01-10 00:00:00          10
+##  4 4            2          2 2015-01-10 00:00:00          10
+##  5 5            3          1 2015-01-10 00:00:00           6
+##  6 6            3          2 2015-01-10 00:00:00           6
+##  7 7            3          3 2015-01-10 00:00:00           6
+##  8 8            3          4 2015-01-10 00:00:00           6
+##  9 9            3          5 2015-01-10 00:00:00           6
+## 10 10           4          1 2015-01-11 00:00:00          22
+## # ... with 15,634 more rows, and 6 more variables:
+## #   product.id &lt;dbl&gt;, quantity &lt;dbl&gt;, name &lt;chr&gt;,
+## #   location &lt;chr&gt;, lat &lt;dbl&gt;, lng &lt;dbl&gt;</code></pre>
+<pre class="r"><code>bike_orderlines_joined_tbl &lt;- orderlines_tbl %&gt;%
+  left_join(bikes_tbl, by = c(&quot;product.id&quot; = &quot;bike.id&quot;)) %&gt;%
+  left_join(bikeshops_tbl, by = c(&quot;customer.id&quot; = &quot;bikeshop.id&quot;))
+
+# Examine the results with glimpse()
+bike_orderlines_joined_tbl %&gt;% glimpse()</code></pre>
+<pre><code>## Rows: 15,644
+## Columns: 19
+## $ ...1           &lt;chr&gt; &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;...
+## $ order.id       &lt;dbl&gt; 1, 1, 2, 2, 3, 3, 3, 3, 3, 4, 5, 5, ...
+## $ order.line     &lt;dbl&gt; 1, 2, 1, 2, 1, 2, 3, 4, 5, 1, 1, 2, ...
+## $ order.date     &lt;dttm&gt; 2015-01-07, 2015-01-07, 2015-01-10,...
+## $ customer.id    &lt;dbl&gt; 2, 2, 10, 10, 6, 6, 6, 6, 6, 22, 8, ...
+## $ product.id     &lt;dbl&gt; 2681, 2411, 2629, 2137, 2367, 1973, ...
+## $ quantity       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, ...
+## $ model          &lt;chr&gt; &quot;Spectral CF 7 WMN&quot;, &quot;Ultimate CF SL...
+## $ model.year     &lt;dbl&gt; 2021, 2020, 2021, 2019, 2020, 2020, ...
+## $ frame.material &lt;chr&gt; &quot;carbon&quot;, &quot;carbon&quot;, &quot;carbon&quot;, &quot;carbo...
+## $ weight         &lt;dbl&gt; 13.80, 7.44, 14.06, 8.80, 11.50, 8.8...
+## $ price          &lt;dbl&gt; 3119, 5359, 2729, 1749, 1219, 1359, ...
+## $ category       &lt;chr&gt; &quot;Mountain - Trail - Spectral&quot;, &quot;Road...
+## $ gender         &lt;chr&gt; &quot;female&quot;, &quot;unisex&quot;, &quot;unisex&quot;, &quot;unise...
+## $ url            &lt;chr&gt; &quot;https://www.canyon.com/en-de/mounta...
+## $ name           &lt;chr&gt; &quot;AlexandeRad&quot;, &quot;AlexandeRad&quot;, &quot;WITT-...
+## $ location       &lt;chr&gt; &quot;Hamburg, Hamburg&quot;, &quot;Hamburg, Hambur...
+## $ lat            &lt;dbl&gt; 53.57532, 53.57532, 53.07379, 53.073...
+## $ lng            &lt;dbl&gt; 10.015340, 10.015340, 8.826754, 8.82...</code></pre>
+<pre class="r"><code># wrangling data ----
+bike_orderlines_joined_tbl %&gt;% 
+  select(location) %&gt;%
+  filter(str_detect(location, &quot;^Hamburg&quot;)) %&gt;% 
+  unique()</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   location        
+##   &lt;chr&gt;           
+## 1 Hamburg, Hamburg</code></pre>
+<pre class="r"><code>bikeshop_orderlines_wrangled_tbl &lt;- bike_orderlines_joined_tbl %&gt;%
+  # Separate category name
+  separate(col    = location,
+           into   = c(&quot;city&quot;, &quot;state&quot;),
+           sep    = &quot;, &quot;) %&gt;%
+  
+  
+  mutate(total.price = price * quantity) %&gt;%
+  
+  select(-...1, -gender) %&gt;%
+  
+  select(-ends_with(&quot;.id&quot;)) %&gt;%
+  
+  bind_cols(bike_orderlines_joined_tbl %&gt;% select(order.id)) %&gt;% 
+  
+  select(order.id, contains(&quot;order&quot;), contains(&quot;model&quot;), contains(&quot;category&quot;),
+         price, quantity, total.price,
+         everything()) %&gt;%
+  
+  rename(bikeshop = name) %&gt;%
+  set_names(names(.) %&gt;% str_replace_all(&quot;\\.&quot;, &quot;_&quot;))
+
+glimpse(bike_orderlines_joined_tbl)</code></pre>
+<pre><code>## Rows: 15,644
+## Columns: 19
+## $ ...1           &lt;chr&gt; &quot;1&quot;, &quot;2&quot;, &quot;3&quot;, &quot;4&quot;, &quot;5&quot;, &quot;6&quot;, &quot;7&quot;, &quot;...
+## $ order.id       &lt;dbl&gt; 1, 1, 2, 2, 3, 3, 3, 3, 3, 4, 5, 5, ...
+## $ order.line     &lt;dbl&gt; 1, 2, 1, 2, 1, 2, 3, 4, 5, 1, 1, 2, ...
+## $ order.date     &lt;dttm&gt; 2015-01-07, 2015-01-07, 2015-01-10,...
+## $ customer.id    &lt;dbl&gt; 2, 2, 10, 10, 6, 6, 6, 6, 6, 22, 8, ...
+## $ product.id     &lt;dbl&gt; 2681, 2411, 2629, 2137, 2367, 1973, ...
+## $ quantity       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, ...
+## $ model          &lt;chr&gt; &quot;Spectral CF 7 WMN&quot;, &quot;Ultimate CF SL...
+## $ model.year     &lt;dbl&gt; 2021, 2020, 2021, 2019, 2020, 2020, ...
+## $ frame.material &lt;chr&gt; &quot;carbon&quot;, &quot;carbon&quot;, &quot;carbon&quot;, &quot;carbo...
+## $ weight         &lt;dbl&gt; 13.80, 7.44, 14.06, 8.80, 11.50, 8.8...
+## $ price          &lt;dbl&gt; 3119, 5359, 2729, 1749, 1219, 1359, ...
+## $ category       &lt;chr&gt; &quot;Mountain - Trail - Spectral&quot;, &quot;Road...
+## $ gender         &lt;chr&gt; &quot;female&quot;, &quot;unisex&quot;, &quot;unisex&quot;, &quot;unise...
+## $ url            &lt;chr&gt; &quot;https://www.canyon.com/en-de/mounta...
+## $ name           &lt;chr&gt; &quot;AlexandeRad&quot;, &quot;AlexandeRad&quot;, &quot;WITT-...
+## $ location       &lt;chr&gt; &quot;Hamburg, Hamburg&quot;, &quot;Hamburg, Hambur...
+## $ lat            &lt;dbl&gt; 53.57532, 53.57532, 53.07379, 53.073...
+## $ lng            &lt;dbl&gt; 10.015340, 10.015340, 8.826754, 8.82...</code></pre>
+<pre class="r"><code>glimpse(bikeshop_orderlines_wrangled_tbl)</code></pre>
+<pre><code>## Rows: 15,644
+## Columns: 17
+## $ order_id       &lt;dbl&gt; 1, 1, 2, 2, 3, 3, 3, 3, 3, 4, 5, 5, ...
+## $ order_line     &lt;dbl&gt; 1, 2, 1, 2, 1, 2, 3, 4, 5, 1, 1, 2, ...
+## $ order_date     &lt;dttm&gt; 2015-01-07, 2015-01-07, 2015-01-10,...
+## $ model          &lt;chr&gt; &quot;Spectral CF 7 WMN&quot;, &quot;Ultimate CF SL...
+## $ model_year     &lt;dbl&gt; 2021, 2020, 2021, 2019, 2020, 2020, ...
+## $ category       &lt;chr&gt; &quot;Mountain - Trail - Spectral&quot;, &quot;Road...
+## $ price          &lt;dbl&gt; 3119, 5359, 2729, 1749, 1219, 1359, ...
+## $ quantity       &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, ...
+## $ total_price    &lt;dbl&gt; 3119, 5359, 2729, 1749, 1219, 1359, ...
+## $ frame_material &lt;chr&gt; &quot;carbon&quot;, &quot;carbon&quot;, &quot;carbon&quot;, &quot;carbo...
+## $ weight         &lt;dbl&gt; 13.80, 7.44, 14.06, 8.80, 11.50, 8.8...
+## $ url            &lt;chr&gt; &quot;https://www.canyon.com/en-de/mounta...
+## $ bikeshop       &lt;chr&gt; &quot;AlexandeRad&quot;, &quot;AlexandeRad&quot;, &quot;WITT-...
+## $ city           &lt;chr&gt; &quot;Hamburg&quot;, &quot;Hamburg&quot;, &quot;Bremen&quot;, &quot;Bre...
+## $ state          &lt;chr&gt; &quot;Hamburg&quot;, &quot;Hamburg&quot;, &quot;Bremen&quot;, &quot;Bre...
+## $ lat            &lt;dbl&gt; 53.57532, 53.57532, 53.07379, 53.073...
+## $ lng            &lt;dbl&gt; 10.015340, 10.015340, 8.826754, 8.82...</code></pre>
+<pre class="r"><code># Sales by Year ----
+# Manipulate
+sales_by_location_tbl &lt;- bikeshop_orderlines_wrangled_tbl %&gt;%
+  
+  select(state, total_price) %&gt;%
+  
+  mutate(state) %&gt;%
+  
+  group_by(state) %&gt;% 
+  summarize(sales = sum(total_price)) %&gt;%
+  
+  mutate(sales_text = scales::dollar(sales, big.mark = &quot;.&quot;, 
+                                     decimal.mark = &quot;,&quot;, 
+                                     prefix = &quot;&quot;, 
+                                     suffix = &quot; €&quot;))
+
+sales_by_location_tbl</code></pre>
+<pre><code>## # A tibble: 12 x 3
+##    state                            sales sales_text  
+##    &lt;chr&gt;                            &lt;dbl&gt; &lt;chr&gt;       
+##  1 Baden-Württemberg              6521090 6.521.090 € 
+##  2 Bavaria                        6742819 6.742.819 € 
+##  3 Berlin                         1128433 1.128.433 € 
+##  4 Bremen                        10653499 10.653.499 €
+##  5 Hamburg                        3874756 3.874.756 € 
+##  6 Hesse                          1558901 1.558.901 € 
+##  7 Lower Saxony                   4107115 4.107.115 € 
+##  8 Mecklenburg-Western Pomerania   618974 618.974 €   
+##  9 North Rhine-Westphalia        21200613 21.200.613 €
+## 10 Saxony                         2230245 2.230.245 € 
+## 11 Saxony-Anhalt                   569614 569.614 €   
+## 12 Schleswig-Holstein             3224749 3.224.749 €</code></pre>
+<pre class="r"><code># Visualize
+sales_by_location_tbl %&gt;%
+  
+  # Setup canvas with the columns year (x-axis) and sales (y-axis)
+  ggplot(aes(x = state, y = sales)) +
+  
+  # Geometries
+  geom_col(fill = &quot;#2DC6D6&quot;) + 
+  geom_label(aes(label = sales_text)) + 
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) + 
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  # Formatting
+  # scale_y_continuous(labels = scales::dollar) + # Change the y-axis. 
+  scale_y_continuous(labels = scales::dollar_format(big.mark = &quot;.&quot;, 
+                                                    decimal.mark = &quot;,&quot;, prefix = &quot;&quot;, suffix = &quot; €&quot;)) +
+  labs(
+    title    = &quot;Revenue by state&quot;,
+    subtitle = &quot;In North Rhine-Westphalia most bikes has been sold&quot;,
+    x = &quot;&quot;, # Override defaults for x and y
+    y = &quot;Revenue&quot;
+  )</code></pre>
+<p><img src="journal_files/figure-html/unnamed-chunk-2-1.png" width="960" /></p>
+<pre class="r"><code># Sales by location and year ----
+
+# Manipulate
+sales_by_year_state_tbl &lt;- bikeshop_orderlines_wrangled_tbl %&gt;%
+  
+  # Select columns and add a year
+  select(order_date, total_price, state) %&gt;%
+  mutate(year = year(order_date)) %&gt;%
+  
+  # Group by and summarize year and main category
+  group_by(year, state) %&gt;%
+  summarise(sales = sum(total_price)) %&gt;%
+  ungroup() %&gt;%
+  
+  # Format $ Text
+  mutate(sales_text = scales::dollar(sales, big.mark = &quot;.&quot;,
+                                     decimal.mark = &quot;,&quot;, 
+                                     prefix = &quot;&quot;, 
+                                     suffix = &quot; €&quot;))
+
+sales_by_year_state_tbl </code></pre>
+<pre><code>## # A tibble: 60 x 4
+##     year state                           sales sales_text 
+##    &lt;dbl&gt; &lt;chr&gt;                           &lt;dbl&gt; &lt;chr&gt;      
+##  1  2015 Baden-Württemberg             1031924 1.031.924 €
+##  2  2015 Bavaria                       1301461 1.301.461 €
+##  3  2015 Berlin                          95853 95.853 €   
+##  4  2015 Bremen                        1395912 1.395.912 €
+##  5  2015 Hamburg                        423090 423.090 €  
+##  6  2015 Hesse                          308609 308.609 €  
+##  7  2015 Lower Saxony                   584386 584.386 €  
+##  8  2015 Mecklenburg-Western Pomerania  222003 222.003 €  
+##  9  2015 North Rhine-Westphalia        3735092 3.735.092 €
+## 10  2015 Saxony                         238371 238.371 €  
+## # ... with 50 more rows</code></pre>
+<pre class="r"><code># Visualize
+sales_by_year_state_tbl %&gt;%
+  
+  # Set up x, y, fill
+  ggplot(aes(x = year, y = sales, fill = state)) +
+  
+  # Geometries
+  geom_col() + # Run up to here to get a stacked bar plot
+  
+  # Facet
+  facet_wrap(~ state) +
+  
+  # Formatting
+  scale_y_continuous(labels = scales::dollar_format(big.mark = &quot;.&quot;, 
+                                                    decimal.mark = &quot;,&quot;, prefix = &quot;&quot;, suffix = &quot; €&quot;)) +
+  labs(
+    title = &quot;Revenue by year and state&quot;,
+    subtitle = &quot;Most of the states have an upward trend&quot;,
+    fill = &quot;Sate&quot; # Changes the legend name
+  )</code></pre>
+<p><img src="journal_files/figure-html/unnamed-chunk-2-2.png" width="960" /></p>
+<pre class="r"><code># Writing Files ----
+# Excel
+#bikeshop_orderlines_wrangled_tbl %&gt;%
+ # write_xlsx(&quot;DS_101/00_data/01_bike_sales/02_wrangled_data/bikeshop_orderlines.xlsx&quot;)
+
+# CSV
+#bikeshop_orderlines_wrangled_tbl %&gt;% 
+ # write_csv(&quot;DS_101/00_data/01_bike_sales/02_wrangled_data/bikeshop_orderlines.csv&quot;)
+
+# RDS
+#bikeshop_orderlines_wrangled_tbl %&gt;% 
+ # write_rds(&quot;DS_101/00_data/01_bike_sales/02_wrangled_data/bikeshop_orderlines.rds&quot;)</code></pre>
+<p>Notice that whatever you define as a top level header, automatically gets put into the table of contents bar on the left.</p>
+<div id="second-level-header" class="section level2">
+<h2><span class="header-section-number">1.1</span> Second level header</h2>
+<p>You can add more headers by adding more hashtags. These won’t be put into the table of contents</p>
+<div id="third-level-header" class="section level3">
+<h3><span class="header-section-number">1.1.1</span> third level header</h3>
+<p>Here’s an even lower level header</p>
+</div>
+</div>
+</div>
+<div id="my-second-post-note-the-order" class="section level1">
+<h1><span class="header-section-number">2</span> My second post (note the order)</h1>
+<p>Last compiled: 2020-11-28</p>
+<p>I’m writing this tutorial going from the top down. And, this is how it will be printed. So, notice the second post is second in the list. If you want your most recent post to be at the top, then make a new post starting at the top. If you want the oldest first, do, then keep adding to the bottom</p>
+</div>
+<div id="adding-r-stuff" class="section level1">
+<h1><span class="header-section-number">3</span> Adding R stuff</h1>
+<p>So far this is just a blog where you can write in plain text and serve your writing to a webpage. One of the main purposes of this lab journal is to record your progress learning R. The reason I am asking you to use this process is because you can both make a website, and a lab journal, and learn R all in R-studio. This makes everything really convenient and in the same place.</p>
+<p>So, let’s say you are learning how to make a histogram in R. For example, maybe you want to sample 100 numbers from a normal distribution with mean = 0, and standard deviation = 1, and then you want to plot a histogram. You can do this right here by using an r code block, like this:</p>
+<pre class="r"><code>samples &lt;- rnorm(100, mean=0, sd=1)
+hist(samples)</code></pre>
+<p><img src="journal_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>When you knit this R Markdown document, you will see that the histogram is printed to the page, along with the R code. This document can be set up to hide the R code in the webpage, just delete the comment (hashtag) from the cold folding option in the yaml header up top. For purposes of letting yourself see the code, and me see the code, best to keep it the way that it is. You’ll learn that all of these things and more can be customized in each R code block.</p>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
