@@ -28,8 +28,15 @@ Last compiled: `r Sys.Date()`
 Notice that whatever you define as a top level header, automatically gets put into the table of contents bar on the left. 
 
 ```{r}
-#samples <- rnorm(100, mean=0, sd=1)
-#hist(samples)
+pkgs_cran <- c(
+  "fs",         # working with the file system
+  "readxl",     # reading excel files
+  "writexl",    # saving data as excel files
+  "tidyverse",  # dplyr, ggplot2, tibble, tidyr, readr, purrr, stringr, forcats
+  "lubridate",  # working with dates and times
+  "devtools"    # used to install non-CRAN packages
+)
+install.packages(pkgs_cran)
 
 library("writexl")
 library("fs")
@@ -212,6 +219,16 @@ You can add more headers by adding more hashtags. These won't be put into the ta
 Last compiled: `r Sys.Date()`
 
 I'm writing this tutorial going from the top down. And, this is how it will be printed. So, notice the second post is second in the list. If you want your most recent post to be at the top, then make a new post starting at the top. If you want the oldest first, do, then keep adding to the bottom
+```{r}
+install.packages(RSQLite)
+install.packages(dplyr)
+library(RSQLite)
+library(dplyr)
+con <- RSQLite::dbConnect(drv    = SQLite(), 
+                          dbname = "DS_101/00_data/02_chinook/Chinook_Sqlite.sqlite")
+dbListTables(con)
+tbl(con, "Album")
+```
 
 # Adding R stuff
 
