@@ -16,52 +16,77 @@ output:
 knitr::opts_chunk$set(message=FALSE,warning=FALSE, cache=TRUE)
 ```
 
-**IMPORTANT:** You can delete everything in here and start fresh. You might want to start by not deleting anything above this line until you know what that stuff is doing.
-
-This is an `.Rmd` file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a \# in front of your text, it will create a top level-header.
-
-# The first exercise
-
 Last compiled: `r Sys.Date()`
 
-
-Notice that whatever you define as a top level header, automatically gets put into the table of contents bar on the left. 
-
+# Intro to the tidyverse
 ```{r}
+# packages ----
 pkgs_cran <- c(
   "fs",         # working with the file system
   "readxl",     # reading excel files
   "writexl",    # saving data as excel files
   "tidyverse",  # dplyr, ggplot2, tibble, tidyr, readr, purrr, stringr, forcats
   "lubridate",  # working with dates and times
-  "devtools"    # used to install non-CRAN packages
+  "devtools",   # used to install non-CRAN packages
+  "RSQLite",    # to open up a connection to the database
+  "dplyr",
+  "DBI",
+  "httr",       # for http requests
+  "glue",       # concatenation and interpolation of strings
+  "jsonlite",   # JSON structure <-> character format
+  "rstudioapi", # credentials
+  "rvest",      # take HTML and CSS selectors of webpages for finding the relevant fields which contain the desired information
+  "stringr",    # for data cleaning and preparation 
+  "stringi",    # character string/ text processing
+  "xopen",      # quickly opening URLs
+  "purrr",      # suite of functions for iteration and functional programming
+  "furrr",      # parallel Processing
+  "data.table", # alternative to default data.frame or tibble from the tidyverse to handle tabular data
+  "vroom",      # fast reading in of delimited files
+  "tictoc",     # counter
+  "ggmap"       # for map_data 
 )
-install.packages(pkgs_cran)
+install.packages(pkgs_cran)  
 
+# libraries ----
 library("writexl")
 library("fs")
 library("devtools")
 library(tidyverse)
 library(readxl)
 library(lubridate)
+library("RSQLite")
+library("dplyr")
+library("DBI")
+library(httr)
+library(glue)
+library(jsonlite)
+library("rstudioapi")
+library(rvest)
+library("stringr")
+library(xopen)
+library(stringi)
+library(furrr)
+library(data.table)
+library(vroom)
+library(tictoc)
+library(maps)
+library(ggmap)
 
 # import files ----
-bikes_tbl      <- read_excel(path = "DS_101/00_data/01_bike_sales/01_raw_data/bikes.xlsx")
+
+bikes_tbl      <- read_excel("DS_101/00_data/01_bike_sales/01_raw_data/bikes.xlsx")
 orderlines_tbl <- read_excel("DS_101/00_data/01_bike_sales/01_raw_data/orderlines.xlsx")
 bikeshops_tbl  <- read_excel("DS_101/00_data/01_bike_sales/01_raw_data/bikeshops.xlsx")
 
 # examine data ----
-#bikeshops_tbl
-#glimpse(bikeshops_tbl)
+glimpse(bikeshops_tbl)
 
 # join data ----
-left_join(orderlines_tbl, bikeshops_tbl, by = c("customer.id" = "bikeshop.id"))
-# Chaining commands with the pipe and assigning it to order_items_joined_tbl
 bike_orderlines_joined_tbl <- orderlines_tbl %>%
   left_join(bikes_tbl, by = c("product.id" = "bike.id")) %>%
   left_join(bikeshops_tbl, by = c("customer.id" = "bikeshop.id"))
 
-# Examine the results with glimpse()
 bike_orderlines_joined_tbl %>% glimpse()
 
 # wrangling data ----
@@ -71,7 +96,6 @@ bike_orderlines_joined_tbl %>%
   unique()
 
 bikeshop_orderlines_wrangled_tbl <- bike_orderlines_joined_tbl %>%
-  # Separate category name
   separate(col    = location,
            into   = c("city", "state"),
            sep    = ", ") %>%
@@ -209,16 +233,9 @@ bikeshop_orderlines_wrangled_tbl %>%
 
 ```
 
-
-### third level header
-
-You can add more headers by adding more hashtags. These won't be put into the table of contents
-
-# The second exercise
+# Data Acquisition
 
 Last compiled: `r Sys.Date()`
-
-I'm writing this tutorial going from the top down. And, this is how it will be printed. So, notice the second post is second in the list. If you want your most recent post to be at the top, then make a new post starting at the top. If you want the oldest first, do, then keep adding to the bottom
 ```{r}
 install.packages(RSQLite)
 install.packages(dplyr)
@@ -229,13 +246,271 @@ con <- RSQLite::dbConnect(drv    = SQLite(),
 dbListTables(con)
 tbl(con, "Album")
 ```
+# Data Wrangling
 
-# Adding R stuff
+```{r}
+## patent ----
+
+# col_types_patent <- list(
+#   id = col_character(),
+#   type = col_skip(), #col_character(),
+#   number = col_character(),
+#   country = col_character(),
+#   date = col_date("%Y-%m-%d"),
+#   abstract = col_skip(), #col_character(),
+#   title = col_skip(), #col_character(),
+#   kind = col_skip(), #col_character(),
+#   num_claims = col_double(),
+#   filename = col_skip(), #col_character(),
+#   withdrawn = col_double()
+# )
+# 
+# patent_tbl <- vroom(
+#   file       = "patent.tsv/patent.tsv", 
+#   delim      = "\t", 
+#   col_types  = col_types_patent,
+#   na         = c("", "NA", "NULL")
+# )
+# patent_tbl %>% glimpse()
+# 
+# ## assignee ----
+# col_types_assignee <- list(
+#   id = col_character(),
+#   type = col_character(),
+#   name_first = col_skip(), #col_character(),
+#   name_last = col_skip(), #col_character(),
+#   organization = col_character()
+# )
+# 
+# assignee_tbl <- vroom(
+#   file       = "patent.tsv/assignee.tsv", 
+#   delim      = "\t", 
+#   col_types  = col_types_assignee,
+#   na         = c("", "NA", "NULL")
+# )
+# assignee_tbl %>% glimpse()
+# 
+# ## patent_assignee ----
+# col_types_patent_assignee <- list(
+#   patent_id = col_character(),
+#   assignee_id = col_character(),
+#   location_id = col_character()
+# )
+# 
+# patent_assignee_tbl <- vroom(
+#   file       = "patent.tsv/patent_assignee.tsv", 
+#   delim      = "\t", 
+#   col_types  = col_types_patent_assignee,
+#   na         = c("", "NA", "NULL")
+# )
+# patent_assignee_tbl %>% glimpse()
+# 
+# ## uspc ----
+# col_types_uspc <- list(
+#   uuid = col_character(),
+#   patent_id = col_character(),
+#   mainclass_id = col_character(),
+#   subclass_id = col_character(),
+#   sequence = col_character()
+# )
+# 
+# uspc_tbl <- vroom(
+#   file       = "patent.tsv/uspc.tsv", 
+#   delim      = "\t", 
+#   col_types  = col_types_uspc,
+#   na         = c("", "NA", "NULL")
+# )
+# uspc_tbl %>% glimpse()
+# 
+# 
+# setDT(patent_tbl)
+# setDT(assignee_tbl)
+# setDT(patent_assignee_tbl)
+# setDT(uspc_tbl)
+# patent_tbl %>% glimpse()
+# patent_assignee_tbl %>% glimpse()
+# assignee_tbl %>% glimpse()
+# uspc_tbl %>% glimpse()
+
+```
+
+## Patent dominance
+The 10 US companies with the most assigned/granted patents.
+
+```{r}
+# a_p_a_combined <- merge(x = assignee_tbl, y = patent_assignee_tbl, 
+#                        by.x  = "id", 
+#                        by.y  = "assignee_id",
+#                        all.x = TRUE, 
+#                        all.y = FALSE)
+# 
+# a_p_a_combined %>% glimpse()
+# 
+# 
+# setkey(a_p_a_combined, "id")
+# #key(a_p_a_combined)
+# setorderv(a_p_a_combined, c("id", "organization"))
+# 
+# a_p_a_combined %>% dim()
+# #a_p_a_combined$id %>% unique()
+# a_p_a_combined %>% glimpse()
+# 
+# us_patents <- a_p_a_combined %>%
+#   select(1:3) %>%
+#   filter(type == "2")
+#   
+# us_patents %>% glimpse()
+# 
+# us_patents %>%
+#   group_by(organization) %>%
+#   summarise(
+#     count = n()
+#   ) %>%
+#   ungroup() %>%
+#   arrange(desc(count)) %>%
+#   slice(1:10)
+# ```
+# ## Recent patent activity
+# top 10 US companies with the most new granted patents for 2019
+# 
+# ```{r}
+# a_p_a_p_combined <- merge(x = patent_tbl, y = a_p_a_combined, 
+#                         by.x    = "id",
+#                         by.y = "patent_id",
+#                         all.x = TRUE, 
+#                         all.y = FALSE)
+# 
+# a_p_a_p_combined %>% glimpse()
+# setkey(a_p_a_p_combined, "id")
+# #key(a_p_a_p_combined)
+# #a_p_a_p_combined$withdrawn %>% unique()
+# setorderv(a_p_a_p_combined, c("id", "organization"))
+# 
+# us_patents2019 <- a_p_a_p_combined %>%
+#   filter(type == "2") %>%
+#   filter(country == "US") %>%
+#   filter(date >= "2019-01-01" & date <="2019-12-01") %>%
+#   filter(withdrawn != 1)  ####################################### richtig ?
+# us_patents2019 %>% glimpse()
+# 
+# us_patents2019 %>%
+# #  filter(organization != na) %>%
+#   group_by(organization) %>%   
+#   summarise(
+#     count = n()                       ####################### #* num_claims ?
+#   ) %>%
+#   ungroup() %>%
+#   arrange(desc(count)) %>%
+#   slice(1:10)
+
+```
+
+## Innovation in Tech
+```{r}
+```
+
+# Data Visualization
+
+## time course of the cumulative Covid-19 cases
+
+```{r}
+covid_data_tbl <- read_csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv")
+
+covid_data_tbl %>% glimpse()
+
+covid_data2020_tbl <- covid_data_tbl %>%
+  select(1:5, 7, 11, 12) %>%
+  filter(year == 2020)
+
+covid_data2020_tbl %>% glimpse()
+
+covid_data2020_tbl %>%
+  #group_by(continentExp) %>%
+  #summarize(continentCases = sum(cases)) %>%
+  #ungroup() %>%
+  filter(countriesAndTerritories %in% c("Germany", "France","United_Kingdom","Spain", "United_States_of_America")) %>%
+
+  ggplot(aes(month, `Cumulative_number_for_14_days_of_COVID-19_cases_per_100000`)) + 
+  geom_line(aes(color = countriesAndTerritories), size = 1) + 
+  scale_x_continuous(breaks = 1:11, labels =c('January', 'February','March', 'April','May', 'June','July', 'August','September', 'October','November')) +
+  scale_y_continuous(labels = scales::dollar_format(scale = 1e-2, 
+                                             prefix = "",
+                                             suffix = "M")) +
+  labs(
+    title = "COVID-19 confirmed cases worldwide",
+    subtitle = "As of 11/02/2020, Europe had more cases than the USA",
+    x = "Year 2020",
+    y = "Cumulative Cases",
+    color = "Continent / Country"
+  ) + 
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = "bottom",
+   # legend.direction = "vertical",
+    plot.title = element_text(face = "bold"),
+  ) +
+  coord_cartesian(ylim = c(0, 1000))
+  
+```
+
+
+## distribution of the mortality rate
+```{r}
+covid_dataworld_tbl <- covid_data_tbl %>%
+  select(1:4, 6:10) %>%
+  mutate(across(countriesAndTerritories, str_replace_all, "_", " ")) %>%
+  mutate(countriesAndTerritories = case_when(
+    countriesAndTerritories == "United Kingdom" ~ "UK",
+    countriesAndTerritories == "United States of America" ~ "USA",
+    countriesAndTerritories == "Czechia" ~ "Czech Republic",
+    TRUE ~ countriesAndTerritories
+  )) %>%
+  group_by(countriesAndTerritories) %>%
+  summarize(countryDeaths = sum(deaths)) %>%
+  ungroup()
+
+covid_deaths_tbl <- covid_dataworld_tbl %>%
+  left_join(covid_data_tbl) %>%
+  select(1,2,11) %>%
+  group_by(countriesAndTerritories) %>%
+  distinct() %>%
+  mutate(Mortality_Rate = countryDeaths / popData2019) %>%
+  select(1,4) 
+
+covid_deaths_tbl %>% glimpse()
+covid_dataworld_tbl %>% glimpse()
+world <- map_data("world")
+world %>% glimpse()
+
+covid_deaths_tbl %>%
+  ggplot() +
+  geom_map(data = covid_deaths_tbl,
+           map = world,
+           aes(map_id = countriesAndTerritories, fill= Mortality_Rate),
+           size=0.15,
+           colour="darkred" ) +
+  scale_y_continuous(labels = scales::percent) +
+  #scale_color_continuous(low    = "#95E1EA", high = "#1097A3") +
+  expand_limits(x = world$long, y = world$lat)+
+  coord_fixed() +
+  scale_fill_continuous(low = 'grey', high = 'red') +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        legend.position = "right",
+        plot.title = element_text(face = "bold")) +
+  labs(
+    title = "Confirmed COVID-19 deaths relative to the size of the population",
+    subtitle = "More than 1.2 Million confirmed COVID-19 deaths worldwide",
+    caption = "Date: 12/01/2020",
+    color = "Mortality Rate"
+  )
+```
+
+
 
 So far this is just a blog where you can write in plain text and serve your writing to a webpage. One of the main purposes of this lab journal is to record your progress learning R. The reason I am asking you to use this process is because you can both make a website, and a lab journal, and learn R all in R-studio. This makes everything really convenient and in the same place. 
 
 So, let's say you are learning how to make a histogram in R. For example, maybe you want to sample 100 numbers from a normal distribution with mean = 0, and standard deviation = 1, and then you want to plot a histogram. You can do this right here by using an r code block, like this:
-
-
 
 When you knit this R Markdown document, you will see that the histogram is printed to the page, along with the R code. This document can be set up to hide the R code in the webpage, just delete the comment (hashtag) from the cold folding option in the yaml header up top. For purposes of letting yourself see the code, and me see the code, best to keep it the way that it is. You'll learn that all of these things and more can be customized in each R code block.
