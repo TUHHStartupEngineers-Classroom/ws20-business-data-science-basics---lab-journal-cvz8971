@@ -54,15 +54,14 @@ pkgs_cran <- c(
   "data.table", # alternative to default data.frame or tibble to handle tabular data
   "vroom",      # fast reading in of delimited files
   "tictoc",     # counter
-  "ggmap"       # for map_data 
+  "ggmap",     # for map_data 
+  "mapsapi",   # for google maps API
+  "leaflet"     # visualizing the route from google maps
 )
 install.packages(pkgs_cran)  
 
-install.packages("mapsapi")
-install.packages("leaflet")
-
-library(mapsapi)
-library(leaflet)
+install.packages()
+install.packages()
 
 
 # libraries
@@ -89,6 +88,8 @@ library(vroom)
 library(tictoc)
 library(maps)
 library(ggmap)
+library(mapsapi)
+library(leaflet)
 
 ```
 
@@ -243,22 +244,23 @@ bikeshop_orderlines_wrangled_tbl %>%
 # Data Acquisition
 
 Last compiled: `r Sys.Date()`
-```{r}
-#install.packages(RSQLite)
-install.packages(dplyr)
+#```{r}
+##install.packages(RSQLite)
+#install.packages(dplyr)
 #library(RSQLite)
-library(dplyr)
-con <- RSQLite::dbConnect(drv    = SQLite(), 
-                          dbname = "DS_101/00_data/02_chinook/Chinook_Sqlite.sqlite")
-dbListTables(con)
-tbl(con, "Album")
-```
+#library(dplyr)
+#con <- RSQLite::dbConnect(drv    = SQLite(), 
+#                          dbname = #"DS_101/00_data/02_chinook/Chinook_Sqlite.sqlite")
+#dbListTables(con)
+#tbl(con, "Album")
+#```
 
 get directions from the Google Maps Directions API
 
 ```{r}
 
 # API parameter
+#key <- .......
 url <- "https://maps.googleapis.com/maps/api/directions/json?"
 modes <- c("driving","transit", "walking", "bicycling")
 tra_model <- c("best_guess", "pessimistic", "optimistic")
@@ -266,37 +268,37 @@ avoid = c(NA, "tolls", "highways", "ferries", "indoor")
 dep_time = Sys.time() + as.difftime(1, units = "hours")
 
 
-route = mp_directions(
-  origin = "Schoene Aussicht Hamburg",
-  destination = "Elbphilharmonie Hamburg",
-  #departure_time = dep_time,
-  mode = modes[[1]],  
-  #traffic_model = tra_model[[1]],
-  alternatives = FALSE,
-  key = key,
-  quiet = TRUE
-)
-route_data = mp_get_routes(route)
+#route = mp_directions(
+#  origin = "Schoene Aussicht Hamburg",
+#  destination = "Elbphilharmonie Hamburg",
+#  #departure_time = dep_time,
+#  mode = modes[[1]],  
+#  #traffic_model = tra_model[[1]],
+#  alternatives = FALSE,
+#  key = key,
+#  quiet = TRUE
+#)
+#route_data = mp_get_routes(route)
 
 # visualization
-pal = colorFactor(palette = "Dark2", domain = route_data$alternative_id)
-leaflet() %>% 
-  addProviderTiles("CartoDB.DarkMatter") %>%
-  addPolylines(data = route_data, opacity = 0.9, weight = 6, color = ~pal(alternative_id))
+#pal = colorFactor(palette = "Dark2", domain = route_data$alternative_id)
+#leaflet() %>% 
+#  addProviderTiles("CartoDB.DarkMatter") %>%
+#  addPolylines(data = route_data, opacity = 0.9, weight = 6, color = ~pal(alternative_id))
 
 
 # extract Separate segments
-route_seg = mp_get_segments(route)
-head(route_seg)
+#route_seg = mp_get_segments(route)
+#head(route_seg)
 
-pal = colorFactor(
-  palette = sample(colors(), length(unique(route_seg$segment_id))), 
-  domain = route_seg$segment_id
-)
+#pal = colorFactor(
+#  palette = sample(colors(), length(unique(route_seg$segment_id))), 
+#  domain = route_seg$segment_id
+#)
 
-leaflet(route_seg) %>% 
-  addProviderTiles("CartoDB.DarkMatter") %>%
-  addPolylines(opacity = 0.9, weight = 6, color = ~pal(segment_id), popup = ~instructions)
+#leaflet(route_seg) %>% 
+#  addProviderTiles("CartoDB.DarkMatter") %>%
+#  addPolylines(opacity = 0.9, weight = 6, color = ~pal(segment_id), popup = ~instructions)
 ```
 
 
@@ -305,7 +307,6 @@ leaflet(route_seg) %>%
 
 ```{r}
 ## patent
-
 col_types_patent <- list(
  id = col_character(),
  type = col_skip(), #col_character(),
@@ -360,7 +361,7 @@ patent_assignee_tbl <- vroom(
 )
 #patent_assignee_tbl %>% glimpse()
  
-## uspc ----
+## uspc
 col_types_uspc <- list(
  uuid = col_skip(), #col_character(),
  patent_id = col_character(),
@@ -376,7 +377,7 @@ uspc_tbl <- vroom(
  na         = c("", "NA", "NULL")
 )
 
-plan("multiprocess") ########################################
+#plan("multiprocess") ########################################
 setDT(patent_tbl)
 setDT(assignee_tbl)
 setDT(patent_assignee_tbl)
@@ -461,10 +462,65 @@ us_patents2019 %>%
 ```
 
 ## Innovation in Tech
+What is the most innovative tech sector? 
+For the top 10 companies (worldwide) with the most patents, what are the top 5 USPTO tech main classes?
+
 ```{r}
+patents_worldwide <- a_p_a_combined %>%
+  select(1:4) %>%
+  filter(type == "2" | type == "3") %>%
+  group_by(organization) %>%
+  summarise(
+    count = n()
+  ) %>%
+  ungroup() %>%
+  arrange(desc(count)) %>%
+  slice(1:10)
+
+patents_worldwide %>% glimpse()
+patents_worldwide$organization
+
+uspc_patents <- merge(x = uspc_tbl, y = a_p_a_combined, 
+                          by = "patent_id",
+                          all.x = TRUE, 
+                          all.y = FALSE)
+
+
+setkey(uspc_patents, "patent_id")
+#key(a_p_a_combined)
+setorderv(uspc_patents, c("patent_id", "organization"))
+
+
+tech_patents <- uspc_patents %>%
+  filter(sequence == "0") %>%               # filter the data where the uspc class appears in the patent file in first place
+  filter(type == "2" | type == "3") %>%     # filter the companies
+  select(1,2,6) %>%
+  
+#uspc_patents <- uspc_patents %>%
+  group_by(organization) %>%
+  mutate(count = n()) %>%
+  ungroup() %>%
+  arrange(desc(count)) #%>%
+ # slice(1:10)
+
+max <- distinct(tech_patents, count) %>%
+  sum(1:10)
+
+tech_patents %>% 
+  slice(1:max) %>%
+  group_by(mainclass_id) %>%
+  summarise(
+    count = n()
+  ) %>%
+  ungroup() %>%
+  arrange(desc(count)) %>%
+  slice(1:5)
 ```
-
-
+257	Active solid-state devices (e.g., transistors, solid-state diodes)
+438	Semiconductor device manufacturing: process
+370	Multiplex communications
+455	Telecommunications
+365	Static information storage and retrieval
 # Data Visualization
 
 ## Time course of the cumulative Covid-19 cases

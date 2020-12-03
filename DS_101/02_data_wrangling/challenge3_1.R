@@ -108,10 +108,10 @@ patent_assignee_tbl %>% glimpse()
 
 ## uspc ----
 col_types_uspc <- list(
-  uuid = col_character(),
+  uuid = col_skip(), #col_character(),
   patent_id = col_character(),
   mainclass_id = col_character(),
-  subclass_id = col_character(),
+  subclass_id = col_skip(), #col_character(),
   sequence = col_character()
 )
 
@@ -191,7 +191,6 @@ us_patents2019 <- a_p_a_p_combined %>%
 us_patents2019 %>% glimpse()
 
 us_patents2019 %>%
-#  filter(organization != na) %>%
   group_by(organization) %>%   
   summarise(
     count = n()                       ####################### #* num_claims ?
@@ -201,25 +200,12 @@ us_patents2019 %>%
   slice(1:10)
 
 # 3. Innovation in Tech ----
+#What is the most innovative tech sector? 
+#For the top 10 companies (worldwide) with the most patents, what are the top 5 USPTO tech main classes?
 
-tech_patents <- merge(x = uspc_tbl, y = a_p_a_combined, 
-                          by = "patent_id",
-                          all.x = TRUE, 
-                          all.y = FALSE)
-patents %>% glimpse()
-
-setkey(tech_patents, "patent_id")
-#key(a_p_a_combined)
-setorderv(tech_patents, c("patent_id", "organization"))
-
-
-tech_patents %>%
-  select(1:3) %>%
-  filter(type == "2" | type == "3")
-
-us_patents %>% glimpse()
-
-us_patents %>%
+patents_worldwide <- a_p_a_combined %>%
+  select(1:4) %>%
+  filter(type == "2" | type == "3") %>%
   group_by(organization) %>%
   summarise(
     count = n()
@@ -228,15 +214,41 @@ us_patents %>%
   arrange(desc(count)) %>%
   slice(1:10)
 
+patents_worldwide %>% glimpse()
+patents_worldwide$organization
+
+uspc_patents <- merge(x = uspc_tbl, y = a_p_a_combined, 
+                          by = "patent_id",
+                          all.x = TRUE, 
+                          all.y = FALSE)
 
 
+setkey(uspc_patents, "patent_id")
+#key(a_p_a_combined)
+setorderv(uspc_patents, c("patent_id", "organization"))
 
 
-us_tblf <- uspc_tbl %>%
-  select(sequence, mainclass_id, patent_id ) %>%
-  #filter(sequence == 0) %>%
-  left_join(patent_assignee_tbl, by = "patent_id")#%>%
-  #left_join(assignee_tbl, by = "id") %>%
-  #select(patent_id, organization, mainclass_id) 
-us_tblf %>% glimpse()
+tech_patents <- uspc_patents %>%
+  filter(sequence == "0") %>%               # filter the data where the uspc class appears in the patent file in first place
+  filter(type == "2" | type == "3") %>%     # filter the companies
+  select(1,2,6) %>%
+  
+#uspc_patents <- uspc_patents %>%
+  group_by(organization) %>%
+  mutate(count = n()) %>%
+  ungroup() %>%
+  arrange(desc(count)) #%>%
+ # slice(1:10)
 
+max <- distinct(tech_patents, count) %>%
+  sum(1:10)
+
+tech_patents %>% 
+  slice(1:max) %>%
+  group_by(mainclass_id) %>%
+  summarise(
+    count = n()
+  ) %>%
+  ungroup() %>%
+  arrange(desc(count)) %>%
+  slice(1:5)

@@ -86,7 +86,7 @@ route_seg = mp_get_segments(route)
 head(route_seg)
 
 pal = colorFactor(
-  palette = sample(colors(), length(unique(seg$segment_id))), 
+  palette = sample(colors(), length(unique(route_seg$segment_id))), 
   domain = route_seg$segment_id
 )
 
