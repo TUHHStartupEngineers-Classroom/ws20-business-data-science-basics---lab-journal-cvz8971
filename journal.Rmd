@@ -259,7 +259,6 @@ get directions from the Google Maps Directions API
 ```{r}
 
 # API parameter
-key <- "AIzaSyBrRUkv83znL_giJRlEpTq03oN8IaXV-rM"
 url <- "https://maps.googleapis.com/maps/api/directions/json?"
 modes <- c("driving","transit", "walking", "bicycling")
 tra_model <- c("best_guess", "pessimistic", "optimistic")
@@ -280,10 +279,10 @@ route = mp_directions(
 route_data = mp_get_routes(route)
 
 # visualization
-#pal = colorFactor(palette = "Dark2", domain = route_data$alternative_id)
-#leaflet() %>% 
-#  addProviderTiles("CartoDB.DarkMatter") %>%
-#  addPolylines(data = route_data, opacity = 0.9, weight = 6, color = #~pal(alternative_id))
+pal = colorFactor(palette = "Dark2", domain = route_data$alternative_id)
+leaflet() %>% 
+  addProviderTiles("CartoDB.DarkMatter") %>%
+  addPolylines(data = route_data, opacity = 0.9, weight = 6, color = ~pal(alternative_id))
 
 
 # extract Separate segments
@@ -295,9 +294,9 @@ pal = colorFactor(
   domain = route_seg$segment_id
 )
 
-#leaflet(route_seg) %>% 
-#  addProviderTiles("CartoDB.DarkMatter") %>%
-#  addPolylines(opacity = 0.9, weight = 6, color = ~pal(segment_id), popup = ~instructions)
+leaflet(route_seg) %>% 
+  addProviderTiles("CartoDB.DarkMatter") %>%
+  addPolylines(opacity = 0.9, weight = 6, color = ~pal(segment_id), popup = ~instructions)
 ```
 
 
@@ -322,13 +321,12 @@ col_types_patent <- list(
 )
  
 patent_tbl <- vroom(
- file       = "DS_101/00_data/patent/patent.tsv", ######################
- #file       = "patent.tsv/patent.tsv", 
+ file       = "patent.tsv/patent.tsv", 
  delim      = "\t", 
  col_types  = col_types_patent,
  na         = c("", "NA", "NULL")
 )
-patent_tbl %>% glimpse()
+#patent_tbl %>% glimpse()
  
 ## assignee
 col_types_assignee <- list(
@@ -345,7 +343,7 @@ assignee_tbl <- vroom(
  col_types  = col_types_assignee,
  na         = c("", "NA", "NULL")
 )
-assignee_tbl %>% glimpse()
+#assignee_tbl %>% glimpse()
  
 ## patent_assignee
 col_types_patent_assignee <- list(
@@ -360,7 +358,7 @@ patent_assignee_tbl <- vroom(
  col_types  = col_types_patent_assignee,
  na         = c("", "NA", "NULL")
 )
-patent_assignee_tbl %>% glimpse()
+#patent_assignee_tbl %>% glimpse()
  
 ## uspc ----
 col_types_uspc <- list(
@@ -377,7 +375,8 @@ uspc_tbl <- vroom(
  col_types  = col_types_uspc,
  na         = c("", "NA", "NULL")
 )
- 
+
+plan("multiprocess") ########################################
 setDT(patent_tbl)
 setDT(assignee_tbl)
 setDT(patent_assignee_tbl)
@@ -449,15 +448,15 @@ us_patents2019 <- a_p_a_p_combined %>%
 
 #us_patents2019 %>% glimpse()
  
-#us_patents2019 %>%
-#  #filter(organization != na) %>%
-#  group_by(organization) %>%   
-#  summarise(
-#     count = n()                       ####################### #* num_claims ?
-#  ) %>%
-#  ungroup() %>%
-#  arrange(desc(count)) %>%
-#  slice(1:10)
+us_patents2019 %>%
+  #filter(organization != na) %>%
+  group_by(organization) %>%   
+  summarise(
+     count = n()                       ####################### #* num_claims ?
+  ) %>%
+  ungroup() %>%
+  arrange(desc(count)) %>%
+  slice(1:10)
 
 ```
 
