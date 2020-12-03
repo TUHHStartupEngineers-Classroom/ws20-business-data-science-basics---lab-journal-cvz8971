@@ -44,6 +44,59 @@ library(stringi)
 library(furrr) 
 
 # 3. Web scraping
+
+# API ----
+
+install.packages("mapsapi")
+install.packages("leaflet")
+
+library(mapsapi)
+library(leaflet)
+
+#API Parameter
+key <- "AIzaSyBrRUkv83znL_giJRlEpTq03oN8IaXV-rM"
+url <- "https://maps.googleapis.com/maps/api/directions/json?"
+modes <- c("driving","transit", "walking", "bicycling")
+tra_model <- c("best_guess", "pessimistic", "optimistic")
+avoid = c(NA, "tolls", "highways", "ferries", "indoor")
+dep_time = Sys.time() + as.difftime(1, units = "hours")
+
+# Get directions from the Google Maps Directions API
+route = mp_directions(
+  origin = "Schoene Aussicht Hamburg",
+  destination = "Elbphilharmonie Hamburg",
+  #departure_time = dep_time,
+  mode = modes[[1]],  
+  #traffic_model = tra_model[[1]],
+  alternatives = FALSE,
+  key = key,
+  quiet = TRUE
+)
+route_data = mp_get_routes(route)
+
+# visualization
+pal = colorFactor(palette = "Dark2", domain = route_data$alternative_id)
+leaflet() %>% 
+  addProviderTiles("CartoDB.DarkMatter") %>%
+  addPolylines(data = route_data, opacity = 0.9, weight = 6, color = ~pal(alternative_id))
+
+
+# Separate segments can be extracted from the same response 
+route_seg = mp_get_segments(route)
+head(route_seg)
+
+pal = colorFactor(
+  palette = sample(colors(), length(unique(seg$segment_id))), 
+  domain = route_seg$segment_id
+)
+
+leaflet(route_seg) %>% 
+  addProviderTiles("CartoDB.DarkMatter") %>%
+  addPolylines(opacity = 1, weight = 7, color = ~pal(segment_id), popup = ~instructions)
+
+
+
+# Web scraping ----
 ## 3.1.1 PRODUCT FAMILIES ----
 
 

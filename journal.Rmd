@@ -18,9 +18,19 @@ knitr::opts_chunk$set(message=FALSE,warning=FALSE, cache=TRUE)
 
 Last compiled: `r Sys.Date()`
 
-# Intro to the tidyverse
+
+So far this is just a blog where you can write in plain text and serve your writing to a webpage. One of the main purposes of this lab journal is to record your progress learning R. The reason I am asking you to use this process is because you can both make a website, and a lab journal, and learn R all in R-studio. This makes everything really convenient and in the same place. 
+
+So, let's say you are learning how to make a histogram in R. For example, maybe you want to sample 100 numbers from a normal distribution with mean = 0, and standard deviation = 1, and then you want to plot a histogram. You can do this right here by using an r code block, like this:
+
+When you knit this R Markdown document, you will see that the histogram is printed to the page, along with the R code. This document can be set up to hide the R code in the webpage, just delete the comment (hashtag) from the cold folding option in the yaml header up top. For purposes of letting yourself see the code, and me see the code, best to keep it the way that it is. You'll learn that all of these things and more can be customized in each R code block.
+
+
+
+First, it is necessary to load the ... packages ....
+
 ```{r}
-# packages ----
+# packages
 pkgs_cran <- c(
   "fs",         # working with the file system
   "readxl",     # reading excel files
@@ -35,20 +45,27 @@ pkgs_cran <- c(
   "glue",       # concatenation and interpolation of strings
   "jsonlite",   # JSON structure <-> character format
   "rstudioapi", # credentials
-  "rvest",      # take HTML and CSS selectors of webpages for finding the relevant fields which contain the desired information
+  "rvest",      # finding the relevant fields which contain the desired information
   "stringr",    # for data cleaning and preparation 
   "stringi",    # character string/ text processing
   "xopen",      # quickly opening URLs
-  "purrr",      # suite of functions for iteration and functional programming
+#  "purrr",      # suite of functions for iteration and functional programming
   "furrr",      # parallel Processing
-  "data.table", # alternative to default data.frame or tibble from the tidyverse to handle tabular data
+  "data.table", # alternative to default data.frame or tibble to handle tabular data
   "vroom",      # fast reading in of delimited files
   "tictoc",     # counter
   "ggmap"       # for map_data 
 )
 install.packages(pkgs_cran)  
 
-# libraries ----
+install.packages("mapsapi")
+install.packages("leaflet")
+
+library(mapsapi)
+library(leaflet)
+
+
+# libraries
 library("writexl")
 library("fs")
 library("devtools")
@@ -73,23 +90,27 @@ library(tictoc)
 library(maps)
 library(ggmap)
 
-# import files ----
+```
 
+# Intro to the tidyverse
+
+Text ...
+
+```{r}
+# import files
 bikes_tbl      <- read_excel("DS_101/00_data/01_bike_sales/01_raw_data/bikes.xlsx")
 orderlines_tbl <- read_excel("DS_101/00_data/01_bike_sales/01_raw_data/orderlines.xlsx")
 bikeshops_tbl  <- read_excel("DS_101/00_data/01_bike_sales/01_raw_data/bikeshops.xlsx")
 
-# examine data ----
+# examine data
 glimpse(bikeshops_tbl)
 
-# join data ----
+# join data
 bike_orderlines_joined_tbl <- orderlines_tbl %>%
   left_join(bikes_tbl, by = c("product.id" = "bike.id")) %>%
   left_join(bikeshops_tbl, by = c("customer.id" = "bikeshop.id"))
 
-bike_orderlines_joined_tbl %>% glimpse()
-
-# wrangling data ----
+# wrangling data
 bike_orderlines_joined_tbl %>% 
   select(location) %>%
   filter(str_detect(location, "^Hamburg")) %>% 
@@ -132,48 +153,38 @@ bikeshop_orderlines_wrangled_tbl <- bike_orderlines_joined_tbl %>%
 
 ```
 
-## Sales by year
+## Sales by location
 ```{r}
 # Manipulate
 sales_by_location_tbl <- bikeshop_orderlines_wrangled_tbl %>%
-  
-  # Select columns
   select(state, total_price) %>%
-  
-  # Add year column
-  mutate(state) %>%
-  
-  # Grouping by year and summarizing sales
-  group_by(state) %>% 
+  mutate(state) %>%                         # add state column
+  group_by(state) %>%                       # group by state and summarize sales
   summarize(sales = sum(total_price)) %>%
-  
-  # Optional: Add a column that turns the numbers into a currency format 
-  # mutate(sales_text = scales::dollar(sales)) <- Works for dollar values
   mutate(sales_text = scales::dollar(sales, big.mark = ".", 
                                      decimal.mark = ",", 
                                      prefix = "", 
                                      suffix = " €"))
-#sales_by_location_tbl
+# sales_by_location_tbl
 
 # Visualize
 sales_by_location_tbl %>%
-  
-  # Setup canvas with the columns year (x-axis) and sales (y-axis)
+  # setup canvas with the columns state (x-axis) and sales (y-axis)
   ggplot(aes(x = state, y = sales)) +
-  
-  # Geometries
-  geom_col(fill = "#2DC6D6") + # bar plot
-  geom_label(aes(label = sales_text)) + #labels to the bars
-  geom_smooth(method = "lm", se = FALSE) + # trendline
+  # geometries
+  geom_col(fill = "#2DC6D6") +              # bar plot
+  geom_label(aes(label = sales_text)) +     # labels to the bars
+  geom_smooth(method = "lm", se = FALSE) +  # trendline
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
-  # Formatting
-  # scale_y_continuous(labels = scales::dollar) + # Change the y-axis. 
-  # Again, we have to adjust it for euro values
-  scale_y_continuous(labels = scales::dollar_format(big.mark = ".", decimal.mark = ",", prefix = "", suffix = " €")) +
+  # formatting
+  scale_y_continuous(labels = scales::dollar_format(big.mark = ".",
+                                                    decimal.mark = ",",
+                                                    prefix = "",
+                                                    suffix = " €")) +
   labs(
     title    = "Revenue by state",
     subtitle = "Most bikes has been sold in North Rhine-Westphalia",
-    x = "", # Override defaults for x and y
+    x = "",
     y = "Revenue"
   )
 ```
@@ -181,44 +192,39 @@ sales_by_location_tbl %>%
 ## Sales by location and year
 ```{r, fig.width=10, fig.height=7}
 
-# Manipulate
 sales_by_year_state_tbl <- bikeshop_orderlines_wrangled_tbl %>%
-  
-  # Select columns and add a year
-  select(order_date, total_price, state) %>%
+  select(order_date, total_price, state) %>%  
   mutate(year = year(order_date)) %>%
-  
-  # Group by and summarize year and main category
   group_by(year, state) %>%
   summarise(sales = sum(total_price)) %>%
   ungroup() %>%
   
   # Format $ Text
-  mutate(sales_text = scales::dollar(sales, big.mark = ".", decimal.mark = ",",prefix = "", suffix = " €"))
+  mutate(sales_text = scales::dollar(sales, big.mark = ".",
+                                     decimal.mark = ",",
+                                     prefix = "",
+                                     suffix = " €"))
 
-#sales_by_year_state_tbl 
+# sales_by_year_state_tbl 
 
 # Visualize
 sales_by_year_state_tbl %>%
-  
-  # Set up x, y, fill
   ggplot(aes(x = year, y = sales, fill = state)) +
-  
   # Geometries
-  geom_col() + # Run up to here to get a stacked bar plot
-  
-  # Facet
+  geom_col() +
   facet_wrap(~ state) +
-  
   # Formatting
-  scale_y_continuous(labels = scales::dollar_format(big.mark = ".", decimal.mark = ",", prefix = "", suffix = " €")) +
+  scale_y_continuous(labels = scales::dollar_format(big.mark = ".",
+                                                    decimal.mark = ",",
+                                                    prefix = "",
+                                                    suffix = " €")) +
   labs(
     title = "Revenue by year and state",
     subtitle = "Most of the states have an upward trend",
     fill = "State"
   )
 
-# Writing Files ----
+# store files
 # Excel
 bikeshop_orderlines_wrangled_tbl %>%
   write_xlsx("DS_101/00_data/01_bike_sales/02_wrangled_data/bikeshop_orderlines.xlsx")
@@ -233,104 +239,153 @@ bikeshop_orderlines_wrangled_tbl %>%
 
 ```
 
+
 # Data Acquisition
 
 Last compiled: `r Sys.Date()`
 ```{r}
-install.packages(RSQLite)
+#install.packages(RSQLite)
 install.packages(dplyr)
-library(RSQLite)
+#library(RSQLite)
 library(dplyr)
 con <- RSQLite::dbConnect(drv    = SQLite(), 
                           dbname = "DS_101/00_data/02_chinook/Chinook_Sqlite.sqlite")
 dbListTables(con)
 tbl(con, "Album")
 ```
+
+get directions from the Google Maps Directions API
+
+```{r}
+
+# API parameter
+key <- "AIzaSyBrRUkv83znL_giJRlEpTq03oN8IaXV-rM"
+url <- "https://maps.googleapis.com/maps/api/directions/json?"
+modes <- c("driving","transit", "walking", "bicycling")
+tra_model <- c("best_guess", "pessimistic", "optimistic")
+avoid = c(NA, "tolls", "highways", "ferries", "indoor")
+dep_time = Sys.time() + as.difftime(1, units = "hours")
+
+
+route = mp_directions(
+  origin = "Schoene Aussicht Hamburg",
+  destination = "Elbphilharmonie Hamburg",
+  #departure_time = dep_time,
+  mode = modes[[1]],  
+  #traffic_model = tra_model[[1]],
+  alternatives = FALSE,
+  key = key,
+  quiet = TRUE
+)
+route_data = mp_get_routes(route)
+
+# visualization
+#pal = colorFactor(palette = "Dark2", domain = route_data$alternative_id)
+#leaflet() %>% 
+#  addProviderTiles("CartoDB.DarkMatter") %>%
+#  addPolylines(data = route_data, opacity = 0.9, weight = 6, color = #~pal(alternative_id))
+
+
+# extract Separate segments
+route_seg = mp_get_segments(route)
+head(route_seg)
+
+pal = colorFactor(
+  palette = sample(colors(), length(unique(route_seg$segment_id))), 
+  domain = route_seg$segment_id
+)
+
+#leaflet(route_seg) %>% 
+#  addProviderTiles("CartoDB.DarkMatter") %>%
+#  addPolylines(opacity = 0.9, weight = 6, color = ~pal(segment_id), popup = ~instructions)
+```
+
+
+
 # Data Wrangling
 
 ```{r}
-## patent ----
+## patent
 
-# col_types_patent <- list(
-#   id = col_character(),
-#   type = col_skip(), #col_character(),
-#   number = col_character(),
-#   country = col_character(),
-#   date = col_date("%Y-%m-%d"),
-#   abstract = col_skip(), #col_character(),
-#   title = col_skip(), #col_character(),
-#   kind = col_skip(), #col_character(),
-#   num_claims = col_double(),
-#   filename = col_skip(), #col_character(),
-#   withdrawn = col_double()
-# )
-# 
-# patent_tbl <- vroom(
-#   file       = "patent.tsv/patent.tsv", 
-#   delim      = "\t", 
-#   col_types  = col_types_patent,
-#   na         = c("", "NA", "NULL")
-# )
-# patent_tbl %>% glimpse()
-# 
-# ## assignee ----
-# col_types_assignee <- list(
-#   id = col_character(),
-#   type = col_character(),
-#   name_first = col_skip(), #col_character(),
-#   name_last = col_skip(), #col_character(),
-#   organization = col_character()
-# )
-# 
-# assignee_tbl <- vroom(
-#   file       = "patent.tsv/assignee.tsv", 
-#   delim      = "\t", 
-#   col_types  = col_types_assignee,
-#   na         = c("", "NA", "NULL")
-# )
-# assignee_tbl %>% glimpse()
-# 
-# ## patent_assignee ----
-# col_types_patent_assignee <- list(
-#   patent_id = col_character(),
-#   assignee_id = col_character(),
-#   location_id = col_character()
-# )
-# 
-# patent_assignee_tbl <- vroom(
-#   file       = "patent.tsv/patent_assignee.tsv", 
-#   delim      = "\t", 
-#   col_types  = col_types_patent_assignee,
-#   na         = c("", "NA", "NULL")
-# )
-# patent_assignee_tbl %>% glimpse()
-# 
-# ## uspc ----
-# col_types_uspc <- list(
-#   uuid = col_character(),
-#   patent_id = col_character(),
-#   mainclass_id = col_character(),
-#   subclass_id = col_character(),
-#   sequence = col_character()
-# )
-# 
-# uspc_tbl <- vroom(
-#   file       = "patent.tsv/uspc.tsv", 
-#   delim      = "\t", 
-#   col_types  = col_types_uspc,
-#   na         = c("", "NA", "NULL")
-# )
-# uspc_tbl %>% glimpse()
-# 
-# 
-# setDT(patent_tbl)
-# setDT(assignee_tbl)
-# setDT(patent_assignee_tbl)
-# setDT(uspc_tbl)
-# patent_tbl %>% glimpse()
-# patent_assignee_tbl %>% glimpse()
-# assignee_tbl %>% glimpse()
-# uspc_tbl %>% glimpse()
+col_types_patent <- list(
+ id = col_character(),
+ type = col_skip(), #col_character(),
+ number = col_character(),
+ country = col_character(),
+ date = col_date("%Y-%m-%d"),
+ abstract = col_skip(), #col_character(),
+ title = col_skip(), #col_character(),
+ kind = col_skip(), #col_character(),
+ num_claims = col_double(),
+ filename = col_skip(), #col_character(),
+ withdrawn = col_double()
+)
+ 
+patent_tbl <- vroom(
+ file       = "DS_101/00_data/patent/patent.tsv", ######################
+ #file       = "patent.tsv/patent.tsv", 
+ delim      = "\t", 
+ col_types  = col_types_patent,
+ na         = c("", "NA", "NULL")
+)
+patent_tbl %>% glimpse()
+ 
+## assignee
+col_types_assignee <- list(
+ id = col_character(),
+ type = col_character(),
+ name_first = col_skip(), #col_character(),
+ name_last = col_skip(), #col_character(),
+ organization = col_character()
+)
+ 
+assignee_tbl <- vroom(
+ file       = "patent.tsv/assignee.tsv", 
+ delim      = "\t", 
+ col_types  = col_types_assignee,
+ na         = c("", "NA", "NULL")
+)
+assignee_tbl %>% glimpse()
+ 
+## patent_assignee
+col_types_patent_assignee <- list(
+ patent_id = col_character(),
+ assignee_id = col_character(),
+ location_id = col_character()
+)
+
+patent_assignee_tbl <- vroom(
+ file       = "patent.tsv/patent_assignee.tsv", 
+ delim      = "\t", 
+ col_types  = col_types_patent_assignee,
+ na         = c("", "NA", "NULL")
+)
+patent_assignee_tbl %>% glimpse()
+ 
+## uspc ----
+col_types_uspc <- list(
+ uuid = col_skip(), #col_character(),
+ patent_id = col_character(),
+ mainclass_id = col_character(),
+ subclass_id = col_skip(), #col_character(),
+ sequence = col_character()
+)
+ 
+uspc_tbl <- vroom(
+ file       = "patent.tsv/uspc.tsv", 
+ delim      = "\t", 
+ col_types  = col_types_uspc,
+ na         = c("", "NA", "NULL")
+)
+ 
+setDT(patent_tbl)
+setDT(assignee_tbl)
+setDT(patent_assignee_tbl)
+setDT(uspc_tbl)
+#patent_tbl %>% glimpse()
+#patent_assignee_tbl %>% glimpse()
+#assignee_tbl %>% glimpse()
+#uspc_tbl %>% glimpse()
 
 ```
 
@@ -338,70 +393,71 @@ tbl(con, "Album")
 The 10 US companies with the most assigned/granted patents.
 
 ```{r}
-# a_p_a_combined <- merge(x = assignee_tbl, y = patent_assignee_tbl, 
-#                        by.x  = "id", 
-#                        by.y  = "assignee_id",
-#                        all.x = TRUE, 
-#                        all.y = FALSE)
-# 
-# a_p_a_combined %>% glimpse()
-# 
-# 
-# setkey(a_p_a_combined, "id")
-# #key(a_p_a_combined)
-# setorderv(a_p_a_combined, c("id", "organization"))
-# 
-# a_p_a_combined %>% dim()
-# #a_p_a_combined$id %>% unique()
-# a_p_a_combined %>% glimpse()
-# 
-# us_patents <- a_p_a_combined %>%
-#   select(1:3) %>%
-#   filter(type == "2")
-#   
-# us_patents %>% glimpse()
-# 
-# us_patents %>%
-#   group_by(organization) %>%
-#   summarise(
-#     count = n()
-#   ) %>%
-#   ungroup() %>%
-#   arrange(desc(count)) %>%
-#   slice(1:10)
-# ```
-# ## Recent patent activity
-# top 10 US companies with the most new granted patents for 2019
-# 
-# ```{r}
-# a_p_a_p_combined <- merge(x = patent_tbl, y = a_p_a_combined, 
-#                         by.x    = "id",
-#                         by.y = "patent_id",
-#                         all.x = TRUE, 
-#                         all.y = FALSE)
-# 
-# a_p_a_p_combined %>% glimpse()
-# setkey(a_p_a_p_combined, "id")
-# #key(a_p_a_p_combined)
-# #a_p_a_p_combined$withdrawn %>% unique()
-# setorderv(a_p_a_p_combined, c("id", "organization"))
-# 
-# us_patents2019 <- a_p_a_p_combined %>%
-#   filter(type == "2") %>%
-#   filter(country == "US") %>%
-#   filter(date >= "2019-01-01" & date <="2019-12-01") %>%
-#   filter(withdrawn != 1)  ####################################### richtig ?
-# us_patents2019 %>% glimpse()
-# 
-# us_patents2019 %>%
-# #  filter(organization != na) %>%
-#   group_by(organization) %>%   
-#   summarise(
+a_p_a_combined <- merge(x = assignee_tbl, y = patent_assignee_tbl, 
+                      by.x  = "id", 
+                      by.y  = "assignee_id",
+                      all.x = TRUE, 
+                      all.y = FALSE)
+ 
+a_p_a_combined %>% glimpse()
+
+ 
+setkey(a_p_a_combined, "id")
+#key(a_p_a_combined)
+setorderv(a_p_a_combined, c("id", "organization"))
+ 
+a_p_a_combined %>% dim()
+#a_p_a_combined$id %>% unique()
+a_p_a_combined %>% glimpse()
+ 
+us_patents <- a_p_a_combined %>%
+ select(1:3) %>%
+ filter(type == "2")
+   
+us_patents %>% glimpse()
+ 
+us_patents %>%
+ group_by(organization) %>%
+ summarise(
+   count = n()
+ ) %>%
+ ungroup() %>%
+ arrange(desc(count)) %>%
+ slice(1:10)
+```
+## Recent patent activity
+top 10 US companies with the most new granted patents for 2019
+ 
+```{r}
+a_p_a_p_combined <- merge(x = patent_tbl, y = a_p_a_combined, 
+                       by.x    = "id",
+                       by.y = "patent_id",
+                       all.x = TRUE, 
+                       all.y = FALSE)
+ 
+a_p_a_p_combined %>% glimpse()
+setkey(a_p_a_p_combined, "id")
+#key(a_p_a_p_combined)
+#a_p_a_p_combined$withdrawn %>% unique()
+setorderv(a_p_a_p_combined, c("id", "organization"))
+ 
+us_patents2019 <- a_p_a_p_combined %>%
+  filter(type == "2") %>%
+  filter(country == "US") %>%
+  filter(date >= "2019-01-01" & date <="2019-12-01") %>%
+  filter(withdrawn != 1)  ####################################### richtig ?
+
+#us_patents2019 %>% glimpse()
+ 
+#us_patents2019 %>%
+#  #filter(organization != na) %>%
+#  group_by(organization) %>%   
+#  summarise(
 #     count = n()                       ####################### #* num_claims ?
-#   ) %>%
-#   ungroup() %>%
-#   arrange(desc(count)) %>%
-#   slice(1:10)
+#  ) %>%
+#  ungroup() %>%
+#  arrange(desc(count)) %>%
+#  slice(1:10)
 
 ```
 
@@ -409,9 +465,10 @@ The 10 US companies with the most assigned/granted patents.
 ```{r}
 ```
 
+
 # Data Visualization
 
-## time course of the cumulative Covid-19 cases
+## Time course of the cumulative Covid-19 cases
 
 ```{r}
 covid_data_tbl <- read_csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv")
@@ -422,7 +479,7 @@ covid_data2020_tbl <- covid_data_tbl %>%
   select(1:5, 7, 11, 12) %>%
   filter(year == 2020)
 
-covid_data2020_tbl %>% glimpse()
+#covid_data2020_tbl %>% glimpse()
 
 covid_data2020_tbl %>%
   #group_by(continentExp) %>%
@@ -454,7 +511,7 @@ covid_data2020_tbl %>%
 ```
 
 
-## distribution of the mortality rate
+## Distribution of the mortality rate
 ```{r}
 covid_dataworld_tbl <- covid_data_tbl %>%
   select(1:4, 6:10) %>%
@@ -507,10 +564,3 @@ covid_deaths_tbl %>%
   )
 ```
 
-
-
-So far this is just a blog where you can write in plain text and serve your writing to a webpage. One of the main purposes of this lab journal is to record your progress learning R. The reason I am asking you to use this process is because you can both make a website, and a lab journal, and learn R all in R-studio. This makes everything really convenient and in the same place. 
-
-So, let's say you are learning how to make a histogram in R. For example, maybe you want to sample 100 numbers from a normal distribution with mean = 0, and standard deviation = 1, and then you want to plot a histogram. You can do this right here by using an r code block, like this:
-
-When you knit this R Markdown document, you will see that the histogram is printed to the page, along with the R code. This document can be set up to hide the R code in the webpage, just delete the comment (hashtag) from the cold folding option in the yaml header up top. For purposes of letting yourself see the code, and me see the code, best to keep it the way that it is. You'll learn that all of these things and more can be customized in each R code block.
