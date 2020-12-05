@@ -23,7 +23,8 @@ pkgs_cran <- c(
   "data.table", # alternative to default data.frame or tibble from the tidyverse to handle tabular data
   "vroom",      # fast reading in of delimited files
   "tictoc",     # counter
-  "ggmap"        # for map_data 
+  "ggmap",      # for map_data
+  "scales"
 )
 install.packages(pkgs_cran)  
 
@@ -51,29 +52,37 @@ library(vroom)
 library(tictoc)
 library(maps)
 library(ggmap)
+library(scales)
 
-# 1. time course of the cumulative Covid-19 cases -----
+# 1. time courve of the cumulative Covid-19 cases -----
 covid_data_tbl <- read_csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv")
 
 covid_data_tbl %>% glimpse()
 
 covid_data2020_tbl <- covid_data_tbl %>%
-  select(1:5, 7, 11, 12) %>%
-  filter(year == 2020)
+  select(1:5, 7, 10, 11, 12) %>%
+  mutate(date = dmy(dateRep)) %>%
+  arrange(date) %>%
+  filter(month != "12")  %>%
+  filter(year == "2020") %>% 
+  filter(countriesAndTerritories %in% c("Germany", "France","United_Kingdom","Spain", "United_States_of_America")) %>%
+  group_by(countriesAndTerritories) %>%
+  mutate(cumulative_cases = cumsum(cases)) %>%
+  ungroup() 
+
+#covid_data2020_tbl$dates <- as.Date(covid_data2020_tbl$dateRep, "%d/%m/%Y")
 
 covid_data2020_tbl %>% glimpse()
-covid_data2020_tbl$countriesAndTerritories %>% unique()
-
-covid_data2020_tbl %>%
-  #group_by(continentExp) %>%
-  #summarize(continentCases = sum(cases)) %>%
-  #ungroup() %>%
-  filter(countriesAndTerritories %in% c("Germany", "France","United_Kingdom","Spain", "United_States_of_America")) %>%
-
-  ggplot(aes(month, `Cumulative_number_for_14_days_of_COVID-19_cases_per_100000`)) + 
-  geom_line(aes(color = countriesAndTerritories), size = 1) + 
-  scale_x_continuous(breaks = 1:11, labels =c('January', 'February','March', 'April','May', 'June','July', 'August','September', 'October','November')) +
-  scale_y_continuous(labels = scales::dollar_format(scale = 1e-2, 
+  
+covid_data2020_tbl %>%#aes(x=dates, y =cumulative_cases)
+  ggplot()+#`Cumulative_number_for_14_days_of_COVID-19_cases_per_100000`)) + 
+  geom_line(aes(x = date,
+                y = cumulative_cases,
+                color = countriesAndTerritories),
+                size = 1) + 
+  scale_x_date(breaks = "1 month", minor_breaks = "1 month", date_labels = '%B')+#, date_labels =c('January', 'February','March', 'April','May', 'June','July', 'August','September', 'October','November')) +
+  #scale_x_date(breaks = month(dates), labels =c('January', 'February','March', 'April','May', 'June','July', 'August','September', 'October','November')) +
+  scale_y_continuous(labels = scales::dollar_format(#scale = 1e-2, 
                                              prefix = "",
                                              suffix = "M")) +
   labs(
@@ -88,13 +97,12 @@ covid_data2020_tbl %>%
     legend.position = "bottom",
    # legend.direction = "vertical",
     plot.title = element_text(face = "bold"),
+    axis.title = element_text(face = "bold")
   ) +
-  coord_cartesian(ylim = c(0, 1000))
+  coord_cartesian(ylim = c(0, 10000000))
   
 covid_data2020_tbl$countriesAndTerritories %>% unique()
 covid_data2020_tbl$continentExp %>% unique()      # Europe"
-
-
 
 
 
@@ -109,35 +117,37 @@ covid_dataworld_tbl <- covid_data_tbl %>%
     countriesAndTerritories == "Czechia" ~ "Czech Republic",
     TRUE ~ countriesAndTerritories
   )) %>%
+  filter(year == "2020") %>%
+  filter(month != "12") %>%
   group_by(countriesAndTerritories) %>%
   summarize(countryDeaths = sum(deaths)) %>%
   ungroup()
+
+covid_dataworld_tbl$countryDeaths <- covid_dataworld_tbl$countryDeaths *(12/11)
+
+covid_dataworld_tbl %>% glimpse()
 
 covid_deaths_tbl <- covid_dataworld_tbl %>%
   left_join(covid_data_tbl) %>%
   select(1,2,11) %>%
   group_by(countriesAndTerritories) %>%
   distinct() %>%
-  mutate(Mortality_Rate = countryDeaths / popData2019) %>%
+  mutate(Mortality_Rate = (countryDeaths / popData2019) * 100) %>%
   select(1,4) 
 
-covid_deaths_tbl %>% glimpse()
-covid_dataworld_tbl %>% glimpse()
 world <- map_data("world")
-world %>% glimpse()
 
 covid_deaths_tbl %>%
   ggplot() +
   geom_map(data = covid_deaths_tbl,
            map = world,
            aes(map_id = countriesAndTerritories, fill= Mortality_Rate),
-           size=0.15,
-           colour="darkred" ) +
+           size=0.05,
+           colour="black" ) +
   scale_y_continuous(labels = scales::percent) +
-  #scale_color_continuous(low    = "#95E1EA", high = "#1097A3") +
   expand_limits(x = world$long, y = world$lat)+
   coord_fixed() +
-  scale_fill_continuous(low = 'grey', high = 'red') +
+  scale_fill_continuous(low = 'red', high = 'black') +
   theme(axis.ticks = element_blank(),
         axis.text = element_blank(),
         axis.title = element_blank(),

@@ -19,15 +19,7 @@ knitr::opts_chunk$set(message=FALSE,warning=FALSE, cache=TRUE)
 Last compiled: `r Sys.Date()`
 
 
-So far this is just a blog where you can write in plain text and serve your writing to a webpage. One of the main purposes of this lab journal is to record your progress learning R. The reason I am asking you to use this process is because you can both make a website, and a lab journal, and learn R all in R-studio. This makes everything really convenient and in the same place. 
-
-So, let's say you are learning how to make a histogram in R. For example, maybe you want to sample 100 numbers from a normal distribution with mean = 0, and standard deviation = 1, and then you want to plot a histogram. You can do this right here by using an r code block, like this:
-
-When you knit this R Markdown document, you will see that the histogram is printed to the page, along with the R code. This document can be set up to hide the R code in the webpage, just delete the comment (hashtag) from the cold folding option in the yaml header up top. For purposes of letting yourself see the code, and me see the code, best to keep it the way that it is. You'll learn that all of these things and more can be customized in each R code block.
-
-
-
-First, it is necessary to load the ... packages ....
+First, it is necessary to load the required packages containing all functions and objects that might be useful for the following exercises. They can be downloaded directly from the CRAN website or using the command line. 
 
 ```{r}
 # packages
@@ -49,20 +41,17 @@ pkgs_cran <- c(
   "stringr",    # for data cleaning and preparation 
   "stringi",    # character string/ text processing
   "xopen",      # quickly opening URLs
-#  "purrr",      # suite of functions for iteration and functional programming
   "furrr",      # parallel Processing
   "data.table", # alternative to default data.frame or tibble to handle tabular data
   "vroom",      # fast reading in of delimited files
   "tictoc",     # counter
-  "ggmap",     # for map_data 
-  "mapsapi",   # for google maps API
-  "leaflet"     # visualizing the route from google maps
+  "ggmap",      # for map_data 
+  "mapsapi",    # for google maps API
+  "leaflet",     # visualizing the route from google maps
+  "leaflet.providers",  
+  "scales"
 )
 install.packages(pkgs_cran)  
-
-install.packages()
-install.packages()
-
 
 # libraries
 library("writexl")
@@ -82,20 +71,27 @@ library(rvest)
 library("stringr")
 library(xopen)
 library(stringi)
-library(furrr)
 library(data.table)
 library(vroom)
 library(tictoc)
 library(maps)
 library(ggmap)
 library(mapsapi)
+library(scales)
 library(leaflet)
+library("leaflet.providers")
 
 ```
-
+*** 
+***
 # Intro to the tidyverse
 
-Text ...
+Possibly the most significant collection of packages in this context is the tidyverse. It contains many useful packages that are in some sense matched to each other. One powerful concept is the pipe from the magrittr package. This helps to make the code better readable and clearer.  
+
+Another important tool is the tibble. This is a data frame that is used to replace the conventional data.frame because it has some improvements. 
+A further characteristic of the tidyverse is the concept of so called Tidy Data, meaning that each data table cell contains exactly one value. There are many functions and operations for the transformation of data into a form in which the data can be handled comfortably and clearly. There is for example the package lubridate which provides many facilities to convert and manipulate dates and times. In addition, numerous concepts are applied in the following sections.  
+
+The first exercise gives a short overview of the import of files, as well as examination and joining of data. It deals with the analysis of sales and utilizes data from bicycles stores.   
 
 ```{r}
 # import files
@@ -121,42 +117,31 @@ bikeshop_orderlines_wrangled_tbl <- bike_orderlines_joined_tbl %>%
   separate(col    = location,
            into   = c("city", "state"),
            sep    = ", ") %>%
-  
-  # Add the total price (price * quantity) 
-  # Add a column to a tibble that uses a formula-style calculation of other columns
   mutate(total.price = price * quantity) %>%
-  
-  # Optional: Reorganize. Using select to grab or remove unnecessary columns
-  # by exact column name
   select(-...1, -gender) %>%
-  
-  # by a pattern
-  # You can use the select_helpers to define patterns. 
-  # Type ?ends_with and click on Select helpers in the documentation
   select(-ends_with(".id")) %>%
   
-  # Actually we need the column "order.id". Let's bind it back to the data
+  # bind the column "order.id" back to the data
   bind_cols(bike_orderlines_joined_tbl %>% select(order.id)) %>% 
-  
-  # You can reorder the data by selecting the columns in your desired order.
-  # You can use select_helpers like contains() or everything()
   select(order.id, contains("order"), contains("model"), contains("category"),
          price, quantity, total.price,
          everything()) %>%
-  
-  # Rename columns because we actually wanted underscores instead of the dots
-  # (one at the time vs. multiple at once)
   rename(bikeshop = name) %>%
   set_names(names(.) %>% str_replace_all("\\.", "_"))
 
-#glimpse(bike_orderlines_joined_tbl)
-#glimpse(bikeshop_orderlines_wrangled_tbl)
 
 ```
 
+After this introductory example, the first task will be performed in the following.  
+
+***
+
 ## Sales by location
+The sales data will now be analyzed under the aspect of the revenue. A graphic of the sales of the individual locations will be created as a bar plot.   
+  
+
 ```{r}
-# Manipulate
+# manipulate
 sales_by_location_tbl <- bikeshop_orderlines_wrangled_tbl %>%
   select(state, total_price) %>%
   mutate(state) %>%                         # add state column
@@ -166,7 +151,6 @@ sales_by_location_tbl <- bikeshop_orderlines_wrangled_tbl %>%
                                      decimal.mark = ",", 
                                      prefix = "", 
                                      suffix = " €"))
-# sales_by_location_tbl
 
 # Visualize
 sales_by_location_tbl %>%
@@ -188,9 +172,14 @@ sales_by_location_tbl %>%
     x = "",
     y = "Revenue"
   )
+
 ```
 
+***
+
 ## Sales by location and year
+Now the sales will be analyzed for the twelve German states with a store separately. This partitioning is done using the function facet_wrap. At the end, the tibble data sets generated above are saved in three different file formats.   
+
 ```{r, fig.width=10, fig.height=7}
 
 sales_by_year_state_tbl <- bikeshop_orderlines_wrangled_tbl %>%
@@ -199,22 +188,18 @@ sales_by_year_state_tbl <- bikeshop_orderlines_wrangled_tbl %>%
   group_by(year, state) %>%
   summarise(sales = sum(total_price)) %>%
   ungroup() %>%
-  
-  # Format $ Text
   mutate(sales_text = scales::dollar(sales, big.mark = ".",
                                      decimal.mark = ",",
                                      prefix = "",
                                      suffix = " €"))
 
-# sales_by_year_state_tbl 
-
-# Visualize
+# visualize
 sales_by_year_state_tbl %>%
   ggplot(aes(x = year, y = sales, fill = state)) +
-  # Geometries
+  # geometries
   geom_col() +
   facet_wrap(~ state) +
-  # Formatting
+  # formatting
   scale_y_continuous(labels = scales::dollar_format(big.mark = ".",
                                                     decimal.mark = ",",
                                                     prefix = "",
@@ -238,29 +223,35 @@ bikeshop_orderlines_wrangled_tbl %>%
 bikeshop_orderlines_wrangled_tbl %>% 
   write_rds("DS_101/00_data/01_bike_sales/02_wrangled_data/bikeshop_orderlines.rds")
 
+
+
+
 ```
-
-
+***
+***
 # Data Acquisition
+This second chapter deals with the import of data into the R sessions so it can be viewed, stored and analyzed. There are many more possibilities for getting data than just saving them as csv or Excel files. An increasingly popular and significant method is web scraping. The amount of unstructured data over the web grows rapidly and it is at the same time more and more important to generate useful information from it. Web scraping is a technique for converting this unstructured data to the structured format which can easily be accessed and used.   
+The web page itself is written in specific coding languages that are then interpreted by the web browsers. The main languages are _Hypertext Markup Language (HTML)_, _Cascasing Style Sheets_ (CSS) and _Javascript_. The first gives a web page its structure and content, whereas CSS is responsible for its style and look and Javascript for the functionality.  
+Another method of data acquisition uses application programming interfaces (APIs). This accesses the web data stored at some remote server utilizing the url path. This technique is addressed by the first exercise of this chapter before the topic web scraping is covered.   
 
-Last compiled: `r Sys.Date()`
-#```{r}
-##install.packages(RSQLite)
-#install.packages(dplyr)
-#library(RSQLite)
-#library(dplyr)
-#con <- RSQLite::dbConnect(drv    = SQLite(), 
-#                          dbname = #"DS_101/00_data/02_chinook/Chinook_Sqlite.sqlite")
-#dbListTables(con)
-#tbl(con, "Album")
-#```
+***
 
-get directions from the Google Maps Directions API
+## Getting data via an API
+
+
+There are two types of url that depend on the respective API, directory-based url and parameter-based url which contain key value pairs separated by an ampersand _&_ and start with a _?_.   
+The API work with _Hypertext Transfer Protocol_ (HTTP) to enable communications between clients and servers. The GET and the POST request are hereby the most important actions. They are used to request data from a specific resource and to send data to a server to create or update a resource, respectively.  
+
+The request transmits to the server running the API what information is desired. That computer will then read this code, process the request, and return formatted data that can be easily parsed by the R libraries.  
+Almost all APIs use _JavaScript Object Notation_ (JSON) for sending and receiving text and numbers in the body. This is a file format used for storing and transmitting data consisting of attribute–value pairs and array data types.   
+
+For this exercise I decided to apply the Google Maps Directions API and get data about any desired route. Therefore I generated an API key on the Google Maps Platform and set the limit of possible requests. Then I defined the origin and the destination as well as vectors for the traveling models and modes such as driving, transit, walking and bicycling. It is also possible to specify a certain departure time and whether alternative routes are to be calculated.   
+The visualization is done using the function leaflet and can be implemented so that the individual route segments are displayed.  
 
 ```{r}
 
 # API parameter
-#key <- .......
+key <- Sys.getenv('key')
 url <- "https://maps.googleapis.com/maps/api/directions/json?"
 modes <- c("driving","transit", "walking", "bicycling")
 tra_model <- c("best_guess", "pessimistic", "optimistic")
@@ -268,207 +259,220 @@ avoid = c(NA, "tolls", "highways", "ferries", "indoor")
 dep_time = Sys.time() + as.difftime(1, units = "hours")
 
 
-#route = mp_directions(
-#  origin = "Schoene Aussicht Hamburg",
-#  destination = "Elbphilharmonie Hamburg",
-#  #departure_time = dep_time,
-#  mode = modes[[1]],  
-#  #traffic_model = tra_model[[1]],
-#  alternatives = FALSE,
-#  key = key,
-#  quiet = TRUE
-#)
-#route_data = mp_get_routes(route)
+route = mp_directions(
+  origin = "Schoene Aussicht Hamburg",
+  destination = "Elbphilharmonie Hamburg",
+  #departure_time = dep_time,
+  mode = modes[[1]],  
+  #traffic_model = tra_model[[1]],
+  alternatives = FALSE,
+  key = key,
+  quiet = TRUE
+)
+route_data = mp_get_routes(route)
 
 # visualization
-#pal = colorFactor(palette = "Dark2", domain = route_data$alternative_id)
-#leaflet() %>% 
-#  addProviderTiles("CartoDB.DarkMatter") %>%
-#  addPolylines(data = route_data, opacity = 0.9, weight = 6, color = ~pal(alternative_id))
+pal = colorFactor(palette = "Dark2", domain = route_data$alternative_id)
+leaflet() %>% 
+  addProviderTiles("CartoDB.DarkMatter") %>%
+  addPolylines(data = route_data, opacity = 0.9, weight = 6, color = ~pal(alternative_id))
 
 
-# extract Separate segments
-#route_seg = mp_get_segments(route)
-#head(route_seg)
+# extract separate segments
+route_seg = mp_get_segments(route)
+head(route_seg)
 
-#pal = colorFactor(
-#  palette = sample(colors(), length(unique(route_seg$segment_id))), 
-#  domain = route_seg$segment_id
-#)
+pal = colorFactor(
+  palette = sample(colors(), length(unique(route_seg$segment_id))), 
+  domain = route_seg$segment_id
+)
 
-#leaflet(route_seg) %>% 
-#  addProviderTiles("CartoDB.DarkMatter") %>%
-#  addPolylines(opacity = 0.9, weight = 6, color = ~pal(segment_id), popup = ~instructions)
+leaflet(route_seg) %>% 
+  addProviderTiles("CartoDB.DarkMatter") %>%
+  addPolylines(opacity = 0.9, weight = 6, color = ~pal(segment_id), popup = ~instructions)
+
 ```
 
 
+## Creating a database using web scraping 
+Model names and prices for one category of bikes offered by a website:   
+```{r}
+# product families:
+
+bike_family_tbl <- read_html("https://www.rosebikes.com/bikes") %>%
+ 
+  html_nodes(css = ".catalog-navigation__link") %>% # get the nodes for the families
+  html_attr('title') %>%                            # extract the information of id attribute
+  enframe(name = "position", value = "family_class") %>%    # convert vector to tibble
+  mutate(                               # add hashtag to get nodes of the categories by id (#)
+    family_id = str_glue("#{family_class}")
+  )
+
+bike_family_tbl
+
+# product categories:
+
+# combine all Ids to one string to get all nodes at once (separated by the operator ",")
+family_id_css <- bike_family_tbl %>%
+  pull(family_id) %>%
+  stringr::str_c(collapse = ", ")
+family_id_css
+
+# extract the urls from the href attribute
+bike_category_tbl <- read_html("https://www.rosebikes.com/bikes/mtb") %>%
+  html_nodes(css = ".catalog-category-bikes__picture-wrapper") %>% 
+  html_attr('href') %>%
+  enframe(name = "position", value = "subdirectory") %>%
+  mutate(                          # add the domain, because we will get only the subdirectories
+    url = glue("https://www.rosebikes.com{subdirectory}")
+  ) %>%
+  distinct(url)                    # some categories are listed multiple times.
+
+bike_category_tbl
+
+bike_prices_tbl <-read_html("https://www.rosebikes.com/bikes/mtb") %>%
+  html_nodes(css = ".catalog-category-bikes__price-title") %>% 
+  #str_remove(pattern = "\\?.*") %>%
+  html_text() %>%
+  stringr::str_extract("(?<=from ).*")
+
+bike_prices_tbl 
+
+
+get_bike_data <- function(url) {
+  
+  html_bike_category <- read_html(url)
+
+  # get the URLs
+  bike_url_tbl  <- html_bike_category %>%
+    html_nodes(css = ".catalog-category-model > a") %>%
+    html_attr('href') %>%
+    str_remove(pattern = "\\?.*") %>%
+    enframe(name = "position", value = "url")
+}
+
+# extract the urls as a character vector
+bike_category_url_vec <- bike_category_tbl %>% 
+  pull(url)
+
+# run the function with every url as an argument
+#bike_data_lst <- map(bike_category_url_vec, get_bike_data)
+bike_data_lst <- lapply(bike_category_url_vec, get_bike_data)
+
+bike_data_lst[[4]] <- bike_category_tbl$url[4]   # contains no price
+bike_data_lst[[5]] <- bike_category_tbl$url[5]   # contains no price
+bike_data_lst[[8]] <- bike_category_tbl$url[8]
+
+bike_data_lst
+
+#saveRDS(bike_data_tbl, "bike_data_tbl.rds")
+```
+
+What should now be documented are the following aspects. First, web scraping is a well suited method for analyzing static and well structured web pages. Because the underling HTML code can change anytime in design or for updating details, it is important to identify these changes to the web page and modify the web scraping script accordingly. Secondly, often an API is available by the service provider or organization. It is always advisable to use the API. Finally it should be mentioned that websites should not be flooded with requests. It is advisable to have some time gap between the requests so that the IP address is not blocked from accessing the website.   
+
+***
+***
 
 # Data Wrangling
+The collected "raw" data have now to be transformed into a format that is more appropriate and valuable for a variety of downstream purposes such as analytics.
+This process is called data wrangling and contains the cleaning and preparation for the subsequent analysis.The data transformations include such actions as extraction, reshaping, joining, splitting and combining, cleansing and filtering to create desired wrangling outputs that can be leveraged later on. The corresponding functions work with columns (features), rows (observations), groups and summarized data.    
+
+The following calculations deal with the wrangling of large data sets using R's data.table. The used data sets are freely accessible and contain information on patents registered worldwide in the past years. This includes the applicant, date, country, title, subject, ID and much more. The source is the _United States Patent and Trademark Office_ (USPTO) which is intended to increase the usability and value of patent data.   
+  
+First, the downloaded files have to be imported:
 
 ```{r}
 ## patent
 col_types_patent <- list(
- id = col_character(),
- type = col_skip(), #col_character(),
- number = col_character(),
- country = col_character(),
- date = col_date("%Y-%m-%d"),
- abstract = col_skip(), #col_character(),
- title = col_skip(), #col_character(),
- kind = col_skip(), #col_character(),
- num_claims = col_double(),
- filename = col_skip(), #col_character(),
- withdrawn = col_double()
+  id = col_character(),
+  date = col_date("%Y-%m-%d"),
+  num_claims = col_double()
 )
- 
+
 patent_tbl <- vroom(
- file       = "patent.tsv/patent.tsv", 
- delim      = "\t", 
- col_types  = col_types_patent,
- na         = c("", "NA", "NULL")
+  file       = "patent.tsv/patent.tsv", 
+  delim      = "\t", 
+  col_types  = col_types_patent,
+  na         = c("", "NA", "NULL")
 )
-#patent_tbl %>% glimpse()
- 
+patent_tbl %>% glimpse()
+
 ## assignee
 col_types_assignee <- list(
- id = col_character(),
- type = col_character(),
- name_first = col_skip(), #col_character(),
- name_last = col_skip(), #col_character(),
- organization = col_character()
+  id = col_character(),
+  type = col_character(),
+  organization = col_character()
 )
- 
+
 assignee_tbl <- vroom(
- file       = "patent.tsv/assignee.tsv", 
- delim      = "\t", 
- col_types  = col_types_assignee,
- na         = c("", "NA", "NULL")
+  file       = "patent.tsv/assignee.tsv", 
+  delim      = "\t", 
+  col_types  = col_types_assignee,
+  na         = c("", "NA", "NULL")
 )
-#assignee_tbl %>% glimpse()
- 
+assignee_tbl %>% glimpse()
+
 ## patent_assignee
 col_types_patent_assignee <- list(
- patent_id = col_character(),
- assignee_id = col_character(),
- location_id = col_character()
+  patent_id = col_character(),
+  assignee_id = col_character()
 )
 
 patent_assignee_tbl <- vroom(
- file       = "patent.tsv/patent_assignee.tsv", 
- delim      = "\t", 
- col_types  = col_types_patent_assignee,
- na         = c("", "NA", "NULL")
+  file       = "patent.tsv/patent_assignee.tsv", 
+  delim      = "\t", 
+  col_types  = col_types_patent_assignee,
+  na         = c("", "NA", "NULL")
 )
-#patent_assignee_tbl %>% glimpse()
- 
+patent_assignee_tbl %>% glimpse()
+
 ## uspc
 col_types_uspc <- list(
- uuid = col_skip(), #col_character(),
- patent_id = col_character(),
- mainclass_id = col_character(),
- subclass_id = col_skip(), #col_character(),
- sequence = col_character()
-)
- 
-uspc_tbl <- vroom(
- file       = "patent.tsv/uspc.tsv", 
- delim      = "\t", 
- col_types  = col_types_uspc,
- na         = c("", "NA", "NULL")
+  patent_id = col_character(),
+  mainclass_id = col_character(),
+  sequence = col_character()
 )
 
-#plan("multiprocess") ########################################
+uspc_tbl <- vroom(
+  file       = "patent.tsv/uspc.tsv", 
+  delim      = "\t", 
+  col_types  = col_types_uspc,
+  na         = c("", "NA", "NULL")
+)
+uspc_tbl %>% glimpse()
+
+
 setDT(patent_tbl)
 setDT(assignee_tbl)
 setDT(patent_assignee_tbl)
 setDT(uspc_tbl)
-#patent_tbl %>% glimpse()
-#patent_assignee_tbl %>% glimpse()
-#assignee_tbl %>% glimpse()
-#uspc_tbl %>% glimpse()
 
 ```
+
+***
 
 ## Patent dominance
-The 10 US companies with the most assigned/granted patents.
+The 10 US companies with the most assigned/granted patents:
 
 ```{r}
+
 a_p_a_combined <- merge(x = assignee_tbl, y = patent_assignee_tbl, 
-                      by.x  = "id", 
-                      by.y  = "assignee_id",
-                      all.x = TRUE, 
-                      all.y = FALSE)
- 
+                        by.x  = "id", 
+                        by.y  = "assignee_id",
+                        all.x = TRUE, 
+                        all.y = FALSE)
+
 a_p_a_combined %>% glimpse()
 
- 
+
 setkey(a_p_a_combined, "id")
-#key(a_p_a_combined)
 setorderv(a_p_a_combined, c("id", "organization"))
- 
-a_p_a_combined %>% dim()
-#a_p_a_combined$id %>% unique()
+
 a_p_a_combined %>% glimpse()
- 
+
 us_patents <- a_p_a_combined %>%
- select(1:3) %>%
- filter(type == "2")
-   
-us_patents %>% glimpse()
- 
-us_patents %>%
- group_by(organization) %>%
- summarise(
-   count = n()
- ) %>%
- ungroup() %>%
- arrange(desc(count)) %>%
- slice(1:10)
-```
-## Recent patent activity
-top 10 US companies with the most new granted patents for 2019
- 
-```{r}
-a_p_a_p_combined <- merge(x = patent_tbl, y = a_p_a_combined, 
-                       by.x    = "id",
-                       by.y = "patent_id",
-                       all.x = TRUE, 
-                       all.y = FALSE)
- 
-a_p_a_p_combined %>% glimpse()
-setkey(a_p_a_p_combined, "id")
-#key(a_p_a_p_combined)
-#a_p_a_p_combined$withdrawn %>% unique()
-setorderv(a_p_a_p_combined, c("id", "organization"))
- 
-us_patents2019 <- a_p_a_p_combined %>%
-  filter(type == "2") %>%
-  filter(country == "US") %>%
-  filter(date >= "2019-01-01" & date <="2019-12-01") %>%
-  filter(withdrawn != 1)  ####################################### richtig ?
-
-#us_patents2019 %>% glimpse()
- 
-us_patents2019 %>%
-  #filter(organization != na) %>%
-  group_by(organization) %>%   
-  summarise(
-     count = n()                       ####################### #* num_claims ?
-  ) %>%
-  ungroup() %>%
-  arrange(desc(count)) %>%
-  slice(1:10)
-
-```
-
-## Innovation in Tech
-What is the most innovative tech sector? 
-For the top 10 companies (worldwide) with the most patents, what are the top 5 USPTO tech main classes?
-
-```{r}
-patents_worldwide <- a_p_a_combined %>%
-  select(1:4) %>%
-  filter(type == "2" | type == "3") %>%
+  select(1:3) %>%
+  filter(type == "2")%>%
   group_by(organization) %>%
   summarise(
     count = n()
@@ -477,33 +481,67 @@ patents_worldwide <- a_p_a_combined %>%
   arrange(desc(count)) %>%
   slice(1:10)
 
-patents_worldwide %>% glimpse()
-patents_worldwide$organization
+```
+***
 
-uspc_patents <- merge(x = uspc_tbl, y = a_p_a_combined, 
-                          by = "patent_id",
+## Recent patent activity
+The 10 US companies with the most new granted patents for 2014:
+ 
+```{r}
+a_p_a_p_combined <- merge(x = patent_tbl, y = a_p_a_combined, 
+                          by.x    = "id",
+                          by.y = "patent_id",
                           all.x = TRUE, 
                           all.y = FALSE)
 
+setkey(a_p_a_p_combined, "id")
+
+setorderv(a_p_a_p_combined, c("id", "organization"))
+
+us_patents2019 <- a_p_a_p_combined %>%
+  filter(type == "2") %>%
+  filter(date >= "2014-01-01" & date <="2014-12-01")
+
+us_patents2019 %>% glimpse()
+
+us_patents2019 %>%
+  group_by(organization) %>%   
+  summarise(
+    sum_claims = sum(num_claims)
+  ) %>%
+  ungroup() %>%
+  arrange(desc(sum_claims)) %>%
+  slice(1:10)
+
+```
+
+***
+
+## Innovation in Tech
+What is the most innovative tech sector? 
+For the top 10 companies (worldwide) with the most patents, what are the top 5 USPTO tech main classes?
+
+```{r}
+
+uspc_patents <- merge(x = uspc_tbl, y = a_p_a_p_combined, 
+                      by.x = "patent_id",
+                      by.y = "id",
+                      all.x = TRUE, 
+                      all.y = FALSE)
 
 setkey(uspc_patents, "patent_id")
-#key(a_p_a_combined)
 setorderv(uspc_patents, c("patent_id", "organization"))
-
 
 tech_patents <- uspc_patents %>%
   filter(sequence == "0") %>%               # filter the data where the uspc class appears in the patent file in first place
   filter(type == "2" | type == "3") %>%     # filter the companies
-  select(1,2,6) %>%
-  
-#uspc_patents <- uspc_patents %>%
+  select(1,2,5,8) %>%
   group_by(organization) %>%
-  mutate(count = n()) %>%
+  mutate(sum_claims = sum(num_claims)) %>%
   ungroup() %>%
-  arrange(desc(count)) #%>%
- # slice(1:10)
+  arrange(desc(sum_claims))
 
-max <- distinct(tech_patents, count) %>%
+max <- distinct(tech_patents, sum_claims) %>%
   sum(1:10)
 
 tech_patents %>% 
@@ -515,37 +553,53 @@ tech_patents %>%
   ungroup() %>%
   arrange(desc(count)) %>%
   slice(1:5)
+
 ```
-257	Active solid-state devices (e.g., transistors, solid-state diodes)
-438	Semiconductor device manufacturing: process
-370	Multiplex communications
-455	Telecommunications
-365	Static information storage and retrieval
+
+
+* 257	Active solid-state devices (e.g., transistors, solid-state diodes)   
+* 370	Multiplex communications  
+* 455	Telecommunications   
+* 709	Electrical computers and digital processing systems: multicomputer data transferring
+* 438	Semiconductor device manufacturing: process   
+
+***
+***
+
 # Data Visualization
+Data visualization is the presentation of data in a pictorial or graphical format. It refers to the techniques used to communicate data or information by encoding it as visual objects. The goal is to see analytics presented visually, in order to grasp difficult concepts or identify new patterns. In this way information can be communicated clearly and efficiently.   
+
+***
 
 ## Time course of the cumulative Covid-19 cases
 
 ```{r}
 covid_data_tbl <- read_csv("https://opendata.ecdc.europa.eu/covid19/casedistribution/csv")
 
-covid_data_tbl %>% glimpse()
-
 covid_data2020_tbl <- covid_data_tbl %>%
-  select(1:5, 7, 11, 12) %>%
-  filter(year == 2020)
-
-#covid_data2020_tbl %>% glimpse()
-
-covid_data2020_tbl %>%
-  #group_by(continentExp) %>%
-  #summarize(continentCases = sum(cases)) %>%
-  #ungroup() %>%
+  select(1:5, 7, 10, 11, 12) %>%
+  mutate(date = dmy(dateRep)) %>%
+  arrange(date) %>%
+  filter(month != "12")  %>%
+  filter(year == "2020") %>% 
   filter(countriesAndTerritories %in% c("Germany", "France","United_Kingdom","Spain", "United_States_of_America")) %>%
+  group_by(countriesAndTerritories) %>%
+  mutate(cumulative_cases = cumsum(cases)) %>%
+  ungroup() 
 
-  ggplot(aes(month, `Cumulative_number_for_14_days_of_COVID-19_cases_per_100000`)) + 
-  geom_line(aes(color = countriesAndTerritories), size = 1) + 
-  scale_x_continuous(breaks = 1:11, labels =c('January', 'February','March', 'April','May', 'June','July', 'August','September', 'October','November')) +
-  scale_y_continuous(labels = scales::dollar_format(scale = 1e-2, 
+#covid_data2020_tbl$dates <- as.Date(covid_data2020_tbl$dateRep, "%d/%m/%Y")
+
+covid_data2020_tbl %>% glimpse()
+  
+covid_data2020_tbl %>% #aes(x=dates, y =cumulative_cases)
+  ggplot()+
+  geom_line(aes(x = date,
+                y = cumulative_cases,
+                color = countriesAndTerritories),
+                size = 0.5) + 
+  scale_x_date(breaks = "1 month", minor_breaks = "1 month", date_labels = '%B') + #, date_labels =c('January', 'February','March', 'April','May', 'June','July', 'August','September', 'October','November')) +
+  #scale_x_date(breaks = month(dates), labels =c('January', 'February','March', 'April','May', 'June','July', 'August','September', 'October','November')) +
+  scale_y_continuous(labels = scales::dollar_format(scale = 1e-6, 
                                              prefix = "",
                                              suffix = "M")) +
   labs(
@@ -558,15 +612,17 @@ covid_data2020_tbl %>%
   theme(
     axis.text.x = element_text(angle = 45, hjust = 1),
     legend.position = "bottom",
-   # legend.direction = "vertical",
     plot.title = element_text(face = "bold"),
+    axis.title = element_text(face = "bold")
   ) +
-  coord_cartesian(ylim = c(0, 1000))
-  
+  coord_cartesian(ylim = c(0, 10000000))
+
 ```
 
+***
 
 ## Distribution of the mortality rate
+
 ```{r}
 covid_dataworld_tbl <- covid_data_tbl %>%
   select(1:4, 6:10) %>%
@@ -577,35 +633,35 @@ covid_dataworld_tbl <- covid_data_tbl %>%
     countriesAndTerritories == "Czechia" ~ "Czech Republic",
     TRUE ~ countriesAndTerritories
   )) %>%
+  filter(year == "2020") %>%
+  filter(month != "12") %>%
   group_by(countriesAndTerritories) %>%
   summarize(countryDeaths = sum(deaths)) %>%
   ungroup()
+
+covid_dataworld_tbl$countryDeaths <- covid_dataworld_tbl$countryDeaths *(12/11)
 
 covid_deaths_tbl <- covid_dataworld_tbl %>%
   left_join(covid_data_tbl) %>%
   select(1,2,11) %>%
   group_by(countriesAndTerritories) %>%
   distinct() %>%
-  mutate(Mortality_Rate = countryDeaths / popData2019) %>%
+  mutate(Mortality_Rate = (countryDeaths / popData2019) * 100) %>%
   select(1,4) 
 
-covid_deaths_tbl %>% glimpse()
-covid_dataworld_tbl %>% glimpse()
 world <- map_data("world")
-world %>% glimpse()
 
 covid_deaths_tbl %>%
   ggplot() +
   geom_map(data = covid_deaths_tbl,
            map = world,
            aes(map_id = countriesAndTerritories, fill= Mortality_Rate),
-           size=0.15,
-           colour="darkred" ) +
+           size=0.05,
+           colour="black" ) +
   scale_y_continuous(labels = scales::percent) +
-  #scale_color_continuous(low    = "#95E1EA", high = "#1097A3") +
   expand_limits(x = world$long, y = world$lat)+
   coord_fixed() +
-  scale_fill_continuous(low = 'grey', high = 'red') +
+  scale_fill_continuous(low = 'red', high = 'black') +
   theme(axis.ticks = element_blank(),
         axis.text = element_blank(),
         axis.title = element_blank(),
@@ -617,5 +673,6 @@ covid_deaths_tbl %>%
     caption = "Date: 12/01/2020",
     color = "Mortality Rate"
   )
+  
 ```
 

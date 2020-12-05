@@ -54,16 +54,16 @@ library(tictoc)
 ## patent ----
 col_types_patent <- list(
   id = col_character(),
-  type = col_skip(), #col_character(),
-  number = col_character(),
-  country = col_character(),
+  #type = col_skip(), #col_character(),
+  #number = col_character(),
+  #country = col_character(),
   date = col_date("%Y-%m-%d"),
-  abstract = col_skip(), #col_character(),
-  title = col_skip(), #col_character(),
-  kind = col_skip(), #col_character(),
-  num_claims = col_double(),
-  filename = col_skip(), #col_character(),
-  withdrawn = col_double()
+  #abstract = col_skip(), #col_character(),
+  #title = col_skip(), #col_character(),
+  #kind = col_skip(), #col_character(),
+  num_claims = col_double()
+  #filename = col_skip(), #col_character(),
+  #withdrawn = col_double()
 )
 
 patent_tbl <- vroom(
@@ -78,8 +78,8 @@ patent_tbl %>% glimpse()
 col_types_assignee <- list(
   id = col_character(),
   type = col_character(),
-  name_first = col_skip(), #col_character(),
-  name_last = col_skip(), #col_character(),
+  #name_first = col_skip(), #col_character(),
+  #name_last = col_skip(), #col_character(),
   organization = col_character()
 )
 
@@ -94,8 +94,8 @@ assignee_tbl %>% glimpse()
 ## patent_assignee ----
 col_types_patent_assignee <- list(
   patent_id = col_character(),
-  assignee_id = col_character(),
-  location_id = col_character()
+  assignee_id = col_character()
+  #location_id = col_character()
 )
 
 patent_assignee_tbl <- vroom(
@@ -108,10 +108,10 @@ patent_assignee_tbl %>% glimpse()
 
 ## uspc ----
 col_types_uspc <- list(
-  uuid = col_skip(), #col_character(),
+  #uuid = col_skip(), #col_character(),
   patent_id = col_character(),
   mainclass_id = col_character(),
-  subclass_id = col_skip(), #col_character(),
+  #subclass_id = col_skip(), #col_character(),
   sequence = col_character()
 )
 
@@ -137,29 +137,23 @@ uspc_tbl %>% glimpse()
 # The 10 US companies with the most assigned/granted patents.
 
 a_p_a_combined <- merge(x = assignee_tbl, y = patent_assignee_tbl, 
-                       by.x  = "id", 
-                       by.y  = "assignee_id",
-                       all.x = TRUE, 
-                       all.y = FALSE)
+                        by.x  = "id", 
+                        by.y  = "assignee_id",
+                        all.x = TRUE, 
+                        all.y = FALSE)
 
 a_p_a_combined %>% glimpse()
 
 
 setkey(a_p_a_combined, "id")
-#key(a_p_a_combined)
 setorderv(a_p_a_combined, c("id", "organization"))
 
 a_p_a_combined %>% dim()
-#a_p_a_combined$id %>% unique()
 a_p_a_combined %>% glimpse()
 
 us_patents <- a_p_a_combined %>%
   select(1:3) %>%
-  filter(type == "2")
-  
-us_patents %>% glimpse()
-
-us_patents %>%
+  filter(type == "2")%>%
   group_by(organization) %>%
   summarise(
     count = n()
@@ -172,10 +166,10 @@ us_patents %>%
 # top 10 US companies with the most new granted patents for 2019
 
 a_p_a_p_combined <- merge(x = patent_tbl, y = a_p_a_combined, 
-                        by.x    = "id",
-                        by.y = "patent_id",
-                        all.x = TRUE, 
-                        all.y = FALSE)
+                          by.x    = "id",
+                          by.y = "patent_id",
+                          all.x = TRUE, 
+                          all.y = FALSE)
 
 a_p_a_p_combined %>% glimpse()
 setkey(a_p_a_p_combined, "id")
@@ -185,62 +179,43 @@ setorderv(a_p_a_p_combined, c("id", "organization"))
 
 us_patents2019 <- a_p_a_p_combined %>%
   filter(type == "2") %>%
-  filter(country == "US") %>%
-  filter(date >= "2019-01-01" & date <="2019-12-01") %>%
-  filter(withdrawn != 1)  ####################################### richtig ?
+  filter(date >= "2014-01-01" & date <="2014-12-01")
+
 us_patents2019 %>% glimpse()
 
 us_patents2019 %>%
   group_by(organization) %>%   
   summarise(
-    count = n()                       ####################### #* num_claims ?
+    sum_claims = sum(num_claims)
   ) %>%
   ungroup() %>%
-  arrange(desc(count)) %>%
+  arrange(desc(sum_claims)) %>%
   slice(1:10)
 
 # 3. Innovation in Tech ----
 #What is the most innovative tech sector? 
 #For the top 10 companies (worldwide) with the most patents, what are the top 5 USPTO tech main classes?
 
-patents_worldwide <- a_p_a_combined %>%
-  select(1:4) %>%
-  filter(type == "2" | type == "3") %>%
-  group_by(organization) %>%
-  summarise(
-    count = n()
-  ) %>%
-  ungroup() %>%
-  arrange(desc(count)) %>%
-  slice(1:10)
+uspc_patents <- merge(x = uspc_tbl, y = a_p_a_p_combined, 
+                      by.x = "patent_id",
+                      by.y = "id",
+                      all.x = TRUE, 
+                      all.y = FALSE)
 
-patents_worldwide %>% glimpse()
-patents_worldwide$organization
-
-uspc_patents <- merge(x = uspc_tbl, y = a_p_a_combined, 
-                          by = "patent_id",
-                          all.x = TRUE, 
-                          all.y = FALSE)
-
-
+uspc_patents %>% glimpse()
 setkey(uspc_patents, "patent_id")
-#key(a_p_a_combined)
 setorderv(uspc_patents, c("patent_id", "organization"))
-
 
 tech_patents <- uspc_patents %>%
   filter(sequence == "0") %>%               # filter the data where the uspc class appears in the patent file in first place
   filter(type == "2" | type == "3") %>%     # filter the companies
-  select(1,2,6) %>%
-  
-#uspc_patents <- uspc_patents %>%
+  select(1,2,5,8) %>%
   group_by(organization) %>%
-  mutate(count = n()) %>%
+  mutate(sum_claims = sum(num_claims)) %>%
   ungroup() %>%
-  arrange(desc(count)) #%>%
- # slice(1:10)
+  arrange(desc(sum_claims))
 
-max <- distinct(tech_patents, count) %>%
+max <- distinct(tech_patents, sum_claims) %>%
   sum(1:10)
 
 tech_patents %>% 
