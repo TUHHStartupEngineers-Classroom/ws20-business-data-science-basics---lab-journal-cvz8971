@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Nele Helena Thomsen" />
+
+<meta name="date" content="2020-11-28" />
+
+<title>Journal (reproducible report)</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">MyLabJournal</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="journal.html">Journal</a>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Class notes
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="dictionary.html">Dictionary</a>
+    </li>
+    <li>
+      <a href="data_wrangling.html">Data Wrangling</a>
+    </li>
+    <li>
+      <a href="ggplot_graphs.html">ggplot graphs</a>
+    </li>
+    <li>
+      <a href="machine_learning.html">machine learning</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="links.html">Links</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Journal (reproducible report)</h1>
+<h4 class="author">Nele Helena Thomsen</h4>
+<h4 class="date">2020-11-28</h4>
+
+</div>
+
+
+<p>Last compiled: 2020-12-05</p>
+<p>First, it is necessary to load the required packages containing all functions and objects that might be useful for the following exercises. They can be downloaded directly from the CRAN website or using the command line.</p>
+<pre class="r"><code># packages
+pkgs_cran &lt;- c(
+  &quot;fs&quot;,         # working with the file system
+  &quot;readxl&quot;,     # reading excel files
+  &quot;writexl&quot;,    # saving data as excel files
+  &quot;tidyverse&quot;,  # dplyr, ggplot2, tibble, tidyr, readr, purrr, stringr, forcats
+  &quot;lubridate&quot;,  # working with dates and times
+  &quot;devtools&quot;,   # used to install non-CRAN packages
+  &quot;RSQLite&quot;,    # to open up a connection to the database
+  &quot;dplyr&quot;,
+  &quot;DBI&quot;,
+  &quot;httr&quot;,       # for http requests
+  &quot;glue&quot;,       # concatenation and interpolation of strings
+  &quot;jsonlite&quot;,   # JSON structure &lt;-&gt; character format
+  &quot;rstudioapi&quot;, # credentials
+  &quot;rvest&quot;,      # finding the relevant fields which contain the desired information
+  &quot;stringr&quot;,    # for data cleaning and preparation 
+  &quot;stringi&quot;,    # character string/ text processing
+  &quot;xopen&quot;,      # quickly opening URLs
+  &quot;furrr&quot;,      # parallel Processing
+  &quot;data.table&quot;, # alternative to default data.frame or tibble to handle tabular data
+  &quot;vroom&quot;,      # fast reading in of delimited files
+  &quot;tictoc&quot;,     # counter
+  &quot;ggmap&quot;,      # for map_data 
+  &quot;mapsapi&quot;,    # for google maps API
+  &quot;leaflet&quot;,     # visualizing the route from google maps
+  &quot;leaflet.providers&quot;,  
+  &quot;scales&quot;
+)
+install.packages(pkgs_cran)  
+
+# libraries
+library(&quot;writexl&quot;)
+library(&quot;fs&quot;)
+library(&quot;devtools&quot;)
+library(tidyverse)
+library(readxl)
+library(lubridate)
+library(&quot;RSQLite&quot;)
+library(&quot;dplyr&quot;)
+library(&quot;DBI&quot;)
+library(httr)
+library(glue)
+library(jsonlite)
+library(&quot;rstudioapi&quot;)
+library(rvest)
+library(&quot;stringr&quot;)
+library(xopen)
+library(stringi)
+library(data.table)
+library(vroom)
+library(tictoc)
+library(maps)
+library(ggmap)
+library(mapsapi)
+library(scales)
+library(leaflet)
+library(&quot;leaflet.providers&quot;)</code></pre>
+<hr />
+<hr />
+<div id="intro-to-the-tidyverse" class="section level1">
+<h1><span class="header-section-number">1</span> Intro to the tidyverse</h1>
+<p>Possibly the most significant collection of packages in this context is the tidyverse. It contains many useful packages that are in some sense matched to each other. One powerful concept is the pipe from the magrittr package. This helps to make the code better readable and clearer.</p>
+<p>Another important tool is the tibble. This is a data frame that is used to replace the conventional data.frame because it has some improvements. A further characteristic of the tidyverse is the concept of so called Tidy Data, meaning that each data table cell contains exactly one value. There are many functions and operations for the transformation of data into a form in which the data can be handled comfortably and clearly. There is for example the package lubridate which provides many facilities to convert and manipulate dates and times. In addition, numerous concepts are applied in the following sections.</p>
+<p>The first exercise gives a short overview of the import of files, as well as examination and joining of data. It deals with the analysis of sales and utilizes data from bicycles stores.</p>
+<pre class="r"><code># import files
+bikes_tbl      &lt;- read_excel(&quot;DS_101/00_data/01_bike_sales/01_raw_data/bikes.xlsx&quot;)
+orderlines_tbl &lt;- read_excel(&quot;DS_101/00_data/01_bike_sales/01_raw_data/orderlines.xlsx&quot;)
+bikeshops_tbl  &lt;- read_excel(&quot;DS_101/00_data/01_bike_sales/01_raw_data/bikeshops.xlsx&quot;)
+
+# examine data
+glimpse(bikeshops_tbl)</code></pre>
+<pre><code>## Rows: 30
+## Columns: 5
+## $ bikeshop.id &lt;dbl&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, ...
+## $ name        &lt;chr&gt; &quot;Zum Goldenen Lenker&quot;, &quot;AlexandeRad&quot;, &quot;Fahrradladen 16&quot;...
+## $ location    &lt;chr&gt; &quot;Berlin, Berlin&quot;, &quot;Hamburg, Hamburg&quot;, &quot;Munich, Bavaria&quot;...
+## $ lat         &lt;dbl&gt; 52.51667, 53.57532, 48.15000, 50.93333, 50.11552, 48.78...
+## $ lng         &lt;dbl&gt; 13.400000, 10.015340, 11.583333, 6.950000, 8.684167, 9....</code></pre>
+<pre class="r"><code># join data
+bike_orderlines_joined_tbl &lt;- orderlines_tbl %&gt;%
+  left_join(bikes_tbl, by = c(&quot;product.id&quot; = &quot;bike.id&quot;)) %&gt;%
+  left_join(bikeshops_tbl, by = c(&quot;customer.id&quot; = &quot;bikeshop.id&quot;))
+
+# wrangling data
+bike_orderlines_joined_tbl %&gt;% 
+  select(location) %&gt;%
+  filter(str_detect(location, &quot;^Hamburg&quot;)) %&gt;% 
+  unique()</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   location        
+##   &lt;chr&gt;           
+## 1 Hamburg, Hamburg</code></pre>
+<pre class="r"><code>bikeshop_orderlines_wrangled_tbl &lt;- bike_orderlines_joined_tbl %&gt;%
+  separate(col    = location,
+           into   = c(&quot;city&quot;, &quot;state&quot;),
+           sep    = &quot;, &quot;) %&gt;%
+  mutate(total.price = price * quantity) %&gt;%
+  select(-...1, -gender) %&gt;%
+  select(-ends_with(&quot;.id&quot;)) %&gt;%
+  
+  # bind the column &quot;order.id&quot; back to the data
+  bind_cols(bike_orderlines_joined_tbl %&gt;% select(order.id)) %&gt;% 
+  select(order.id, contains(&quot;order&quot;), contains(&quot;model&quot;), contains(&quot;category&quot;),
+         price, quantity, total.price,
+         everything()) %&gt;%
+  rename(bikeshop = name) %&gt;%
+  set_names(names(.) %&gt;% str_replace_all(&quot;\\.&quot;, &quot;_&quot;))</code></pre>
+<p>After this introductory example, the first task will be performed in the following.</p>
+<hr />
+<div id="sales-by-location" class="section level2">
+<h2><span class="header-section-number">1.1</span> Sales by location</h2>
+<p>The sales data will now be analyzed under the aspect of the revenue. A graphic of the sales of the individual locations will be created as a bar plot.</p>
+<pre class="r"><code># manipulate
+sales_by_location_tbl &lt;- bikeshop_orderlines_wrangled_tbl %&gt;%
+  select(state, total_price) %&gt;%
+  mutate(state) %&gt;%                         # add state column
+  group_by(state) %&gt;%                       # group by state and summarize sales
+  summarize(sales = sum(total_price)) %&gt;%
+  mutate(sales_text = scales::dollar(sales, big.mark = &quot;.&quot;, 
+                                     decimal.mark = &quot;,&quot;, 
+                                     prefix = &quot;&quot;, 
+                                     suffix = &quot; €&quot;))
+
+# Visualize
+sales_by_location_tbl %&gt;%
+  # setup canvas with the columns state (x-axis) and sales (y-axis)
+  ggplot(aes(x = state, y = sales)) +
+  # geometries
+  geom_col(fill = &quot;#2DC6D6&quot;) +              # bar plot
+  geom_label(aes(label = sales_text)) +     # labels to the bars
+  geom_smooth(method = &quot;lm&quot;, se = FALSE) +  # trendline
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  # formatting
+  scale_y_continuous(labels = scales::dollar_format(big.mark = &quot;.&quot;,
+                                                    decimal.mark = &quot;,&quot;,
+                                                    prefix = &quot;&quot;,
+                                                    suffix = &quot; €&quot;)) +
+  labs(
+    title    = &quot;Revenue by state&quot;,
+    subtitle = &quot;Most bikes has been sold in North Rhine-Westphalia&quot;,
+    x = &quot;&quot;,
+    y = &quot;Revenue&quot;
+  )</code></pre>
+<p><img src="journal_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<hr />
+</div>
+<div id="sales-by-location-and-year" class="section level2">
+<h2><span class="header-section-number">1.2</span> Sales by location and year</h2>
+<p>Now the sales will be analyzed for the twelve German states with a store separately. This partitioning is done using the function facet_wrap. At the end, the tibble data sets generated above are saved in three different file formats.</p>
+<pre class="r"><code>sales_by_year_state_tbl &lt;- bikeshop_orderlines_wrangled_tbl %&gt;%
+  select(order_date, total_price, state) %&gt;%  
+  mutate(year = year(order_date)) %&gt;%
+  group_by(year, state) %&gt;%
+  summarise(sales = sum(total_price)) %&gt;%
+  ungroup() %&gt;%
+  mutate(sales_text = scales::dollar(sales, big.mark = &quot;.&quot;,
+                                     decimal.mark = &quot;,&quot;,
+                                     prefix = &quot;&quot;,
+                                     suffix = &quot; €&quot;))
+
+# visualize
+sales_by_year_state_tbl %&gt;%
+  ggplot(aes(x = year, y = sales, fill = state)) +
+  # geometries
+  geom_col() +
+  facet_wrap(~ state) +
+  # formatting
+  scale_y_continuous(labels = scales::dollar_format(big.mark = &quot;.&quot;,
+                                                    decimal.mark = &quot;,&quot;,
+                                                    prefix = &quot;&quot;,
+                                                    suffix = &quot; €&quot;)) +
+  labs(
+    title = &quot;Revenue by year and state&quot;,
+    subtitle = &quot;Most of the states have an upward trend&quot;,
+    fill = &quot;State&quot;
+  )</code></pre>
+<p><img src="journal_files/figure-html/unnamed-chunk-4-1.png" width="960" /></p>
+<pre class="r"><code># store files
+# Excel
+bikeshop_orderlines_wrangled_tbl %&gt;%
+  write_xlsx(&quot;DS_101/00_data/01_bike_sales/02_wrangled_data/bikeshop_orderlines.xlsx&quot;)
+
+# CSV
+bikeshop_orderlines_wrangled_tbl %&gt;% 
+  write_csv(&quot;DS_101/00_data/01_bike_sales/02_wrangled_data/bikeshop_orderlines.csv&quot;)
+
+# RDS
+bikeshop_orderlines_wrangled_tbl %&gt;% 
+  write_rds(&quot;DS_101/00_data/01_bike_sales/02_wrangled_data/bikeshop_orderlines.rds&quot;)</code></pre>
+<hr />
+<hr />
+</div>
+</div>
+<div id="data-acquisition" class="section level1">
+<h1><span class="header-section-number">2</span> Data Acquisition</h1>
+<p>This second chapter deals with the import of data into the R sessions so it can be viewed, stored and analyzed. There are many more possibilities for getting data than just saving them as csv or Excel files. An increasingly popular and significant method is web scraping. The amount of unstructured data over the web grows rapidly and it is at the same time more and more important to generate useful information from it. Web scraping is a technique for converting this unstructured data to the structured format which can easily be accessed and used.<br />
+The web page itself is written in specific coding languages that are then interpreted by the web browsers. The main languages are <em>Hypertext Markup Language (HTML)</em>, <em>Cascasing Style Sheets</em> (CSS) and <em>Javascript</em>. The first gives a web page its structure and content, whereas CSS is responsible for its style and look and Javascript for the functionality.<br />
+Another method of data acquisition uses application programming interfaces (APIs). This accesses the web data stored at some remote server utilizing the url path. This technique is addressed by the first exercise of this chapter before the topic web scraping is covered.</p>
+<hr />
+<div id="getting-data-via-an-api" class="section level2">
+<h2><span class="header-section-number">2.1</span> Getting data via an API</h2>
+<p>There are two types of url that depend on the respective API, directory-based url and parameter-based url which contain key value pairs separated by an ampersand <em>&amp;</em> and start with a <em>?</em>.<br />
+The API work with <em>Hypertext Transfer Protocol</em> (HTTP) to enable communications between clients and servers. The GET and the POST request are hereby the most important actions. They are used to request data from a specific resource and to send data to a server to create or update a resource, respectively.</p>
+<p>The request transmits to the server running the API what information is desired. That computer will then read this code, process the request, and return formatted data that can be easily parsed by the R libraries.<br />
+Almost all APIs use <em>JavaScript Object Notation</em> (JSON) for sending and receiving text and numbers in the body. This is a file format used for storing and transmitting data consisting of attribute–value pairs and array data types.</p>
+<p>For this exercise I decided to apply the Google Maps Directions API and get data about any desired route. Therefore I generated an API key on the Google Maps Platform and set the limit of possible requests. Then I defined the origin and the destination as well as vectors for the traveling models and modes such as driving, transit, walking and bicycling. It is also possible to specify a certain departure time and whether alternative routes are to be calculated.<br />
+The visualization is done using the function leaflet and can be implemented so that the individual route segments are displayed.</p>
+<pre class="r"><code># API parameter
+key &lt;- Sys.getenv(&#39;key&#39;)
+url &lt;- &quot;https://maps.googleapis.com/maps/api/directions/json?&quot;
+modes &lt;- c(&quot;driving&quot;,&quot;transit&quot;, &quot;walking&quot;, &quot;bicycling&quot;)
+tra_model &lt;- c(&quot;best_guess&quot;, &quot;pessimistic&quot;, &quot;optimistic&quot;)
+avoid = c(NA, &quot;tolls&quot;, &quot;highways&quot;, &quot;ferries&quot;, &quot;indoor&quot;)
+dep_time = Sys.time() + as.difftime(1, units = &quot;hours&quot;)
+
+
+route = mp_directions(
+  origin = &quot;Schoene Aussicht Hamburg&quot;,
+  destination = &quot;Elbphilharmonie Hamburg&quot;,
+  #departure_time = dep_time,
+  mode = modes[[1]],  
+  #traffic_model = tra_model[[1]],
+  alternatives = FALSE,
+  key = key,
+  quiet = TRUE
+)
+route_data = mp_get_routes(route)
+
+# visualization
+pal = colorFactor(palette = &quot;Dark2&quot;, domain = route_data$alternative_id)
+#leaflet() %&gt;% 
+#  addProviderTiles(&quot;CartoDB.DarkMatter&quot;) %&gt;%
+#  addPolylines(data = route_data, opacity = 0.9, weight = 6, color = ~pal(alternative_id))
+
+
+# extract separate segments
+route_seg = mp_get_segments(route)
+head(route_seg)</code></pre>
+<pre><code>## Simple feature collection with 6 features and 12 fields
+## geometry type:  LINESTRING
+## dimension:      XY
+## bbox:           xmin: 10.00941 ymin: 53.56434 xmax: 10.01964 ymax: 53.57179
+## geographic CRS: WGS 84
+##       alternative_id leg_id segment_id       summary travel_mode
+## 1-1-1              1      1          1 An der Alster     driving
+## 1-1-2              1      1          2 An der Alster     driving
+## 1-1-3              1      1          3 An der Alster     driving
+## 1-1-4              1      1          4 An der Alster     driving
+## 1-1-5              1      1          5 An der Alster     driving
+## 1-1-6              1      1          6 An der Alster     driving
+##                                                                 instructions
+## 1-1-1 Head &lt;b&gt;south&lt;/b&gt; on &lt;b&gt;Schöne Aussicht&lt;/b&gt; toward &lt;b&gt;Auguststraße&lt;/b&gt;
+## 1-1-2                              Turn &lt;b&gt;left&lt;/b&gt; onto &lt;b&gt;Auguststraße&lt;/b&gt;
+## 1-1-3                    Turn &lt;b&gt;right&lt;/b&gt; onto &lt;b&gt;Heinrich-Hertz-Straße&lt;/b&gt;
+## 1-1-4           Turn &lt;b&gt;right&lt;/b&gt; at the 1st cross street onto &lt;b&gt;Hofweg&lt;/b&gt;
+## 1-1-5                                   Continue onto &lt;b&gt;Papenhuder Str.&lt;/b&gt;
+## 1-1-6                         Turn &lt;b&gt;right&lt;/b&gt; onto &lt;b&gt;Mundsburger Damm&lt;/b&gt;
+##       distance_m distance_text duration_s duration_text departure_time
+## 1-1-1        158        0.2 km         30         1 min           &lt;NA&gt;
+## 1-1-2        325        0.3 km         72         1 min           &lt;NA&gt;
+## 1-1-3        129        0.1 km         46         1 min           &lt;NA&gt;
+## 1-1-4        365        0.4 km         62         1 min           &lt;NA&gt;
+## 1-1-5        371        0.4 km         77         1 min           &lt;NA&gt;
+## 1-1-6        179        0.2 km         30         1 min           &lt;NA&gt;
+##       arrival_time                       geometry
+## 1-1-1         &lt;NA&gt; LINESTRING (10.00941 53.571...
+## 1-1-2         &lt;NA&gt; LINESTRING (10.01047 53.569...
+## 1-1-3         &lt;NA&gt; LINESTRING (10.01412 53.571...
+## 1-1-4         &lt;NA&gt; LINESTRING (10.01602 53.571...
+## 1-1-5         &lt;NA&gt; LINESTRING (10.01806 53.568...
+## 1-1-6         &lt;NA&gt; LINESTRING (10.01964 53.565...</code></pre>
+<pre class="r"><code>pal = colorFactor(
+  palette = sample(colors(), length(unique(route_seg$segment_id))), 
+  domain = route_seg$segment_id
+)
+
+#leaflet(route_seg) %&gt;% 
+#  addProviderTiles(&quot;CartoDB.DarkMatter&quot;) %&gt;%
+#  addPolylines(opacity = 0.9, weight = 6, color = ~pal(segment_id), popup = ~instructions)</code></pre>
+</div>
+<div id="creating-a-database-using-web-scraping" class="section level2">
+<h2><span class="header-section-number">2.2</span> Creating a database using web scraping</h2>
+<p>Model names and prices for one category of bikes offered by a website:</p>
+<pre class="r"><code># product families:
+
+bike_family_tbl &lt;- read_html(&quot;https://www.rosebikes.com/bikes&quot;) %&gt;%
+ 
+  html_nodes(css = &quot;.catalog-navigation__link&quot;) %&gt;% # get the nodes for the families
+  html_attr(&#39;title&#39;) %&gt;%                            # extract the information of id attribute
+  enframe(name = &quot;position&quot;, value = &quot;family_class&quot;) %&gt;%    # convert vector to tibble
+  mutate(                               # add hashtag to get nodes of the categories by id (#)
+    family_id = str_glue(&quot;#{family_class}&quot;)
+  )
+
+bike_family_tbl</code></pre>
+<pre><code>## # A tibble: 10 x 3
+##    position family_class family_id  
+##       &lt;int&gt; &lt;chr&gt;        &lt;glue&gt;     
+##  1        1 MTB          #MTB       
+##  2        2 Road         #Road      
+##  3        3 Gravel       #Gravel    
+##  4        4 Cyclocross   #Cyclocross
+##  5        5 Hybrid       #Hybrid    
+##  6        6 Fitness      #Fitness   
+##  7        7 Touring      #Touring   
+##  8        8 Urban        #Urban     
+##  9        9 Kids         #Kids      
+## 10       10 Sale         #Sale</code></pre>
+<pre class="r"><code># product categories:
+
+# combine all Ids to one string to get all nodes at once (separated by the operator &quot;,&quot;)
+family_id_css &lt;- bike_family_tbl %&gt;%
+  pull(family_id) %&gt;%
+  stringr::str_c(collapse = &quot;, &quot;)
+family_id_css</code></pre>
+<pre><code>## [1] &quot;#MTB, #Road, #Gravel, #Cyclocross, #Hybrid, #Fitness, #Touring, #Urban, #Kids, #Sale&quot;</code></pre>
+<pre class="r"><code># extract the urls from the href attribute
+bike_category_tbl &lt;- read_html(&quot;https://www.rosebikes.com/bikes/mtb&quot;) %&gt;%
+  html_nodes(css = &quot;.catalog-category-bikes__picture-wrapper&quot;) %&gt;% 
+  html_attr(&#39;href&#39;) %&gt;%
+  enframe(name = &quot;position&quot;, value = &quot;subdirectory&quot;) %&gt;%
+  mutate(                          # add the domain, because we will get only the subdirectories
+    url = glue(&quot;https://www.rosebikes.com{subdirectory}&quot;)
+  ) %&gt;%
+  distinct(url)                    # some categories are listed multiple times.
+
+bike_category_tbl</code></pre>
+<pre><code>## # A tibble: 9 x 1
+##   url                                                                
+##   &lt;glue&gt;                                                             
+## 1 https://www.rosebikes.com/bikes/mtb/trail-/-enduro/ground-control  
+## 2 https://www.rosebikes.com/bikes/mtb/trail-/-enduro/root-miller     
+## 3 https://www.rosebikes.com/bikes/mtb/trail-/-enduro/pikes-peak      
+## 4 https://www.rosebikes.com/bikes/mtb/dirt/the-bruce                 
+## 5 https://www.rosebikes.com/bikes/mtb/cross-country/count-solo       
+## 6 https://www.rosebikes.com/bikes/mtb/cross-country/psycho-path      
+## 7 https://www.rosebikes.com/bikes/mtb/cross-country/thrill-hill      
+## 8 https://www.rosebikes.com/bikes/mtb/cross-country/thrill-hill-trail
+## 9 https://www.rosebikes.com/bikes/mtb/freeride/soul-fire</code></pre>
+<pre class="r"><code>bike_prices_tbl &lt;-read_html(&quot;https://www.rosebikes.com/bikes/mtb&quot;) %&gt;%
+  html_nodes(css = &quot;.catalog-category-bikes__price-title&quot;) %&gt;% 
+  #str_remove(pattern = &quot;\\?.*&quot;) %&gt;%
+  html_text() %&gt;%
+  stringr::str_extract(&quot;(?&lt;=from ).*&quot;)
+
+bike_prices_tbl </code></pre>
+<pre><code>## [1] &quot;\2001,699.00&quot; &quot;\2001,999.00&quot; &quot;\2003,099.00&quot; NA          NA          &quot;\2001,849.00&quot;
+## [7] &quot;\2002,599.00&quot; &quot;\2002,899.00&quot; &quot;\2002,149.00&quot;</code></pre>
+<pre class="r"><code>get_bike_data &lt;- function(url) {
+  
+  html_bike_category &lt;- read_html(url)
+
+  # get the URLs
+  bike_url_tbl  &lt;- html_bike_category %&gt;%
+    html_nodes(css = &quot;.catalog-category-model &gt; a&quot;) %&gt;%
+    html_attr(&#39;href&#39;) %&gt;%
+    str_remove(pattern = &quot;\\?.*&quot;) %&gt;%
+    enframe(name = &quot;position&quot;, value = &quot;url&quot;)
+}
+
+# extract the urls as a character vector
+bike_category_url_vec &lt;- bike_category_tbl %&gt;% 
+  pull(url)
+
+# run the function with every url as an argument
+#bike_data_lst &lt;- map(bike_category_url_vec, get_bike_data)
+bike_data_lst &lt;- lapply(bike_category_url_vec, get_bike_data)
+
+bike_data_lst[[4]] &lt;- bike_category_tbl$url[4]   # contains no price
+bike_data_lst[[5]] &lt;- bike_category_tbl$url[5]   # contains no price
+bike_data_lst[[8]] &lt;- bike_category_tbl$url[8]
+
+bike_data_lst</code></pre>
+<pre><code>## [[1]]
+## # A tibble: 4 x 2
+##   position url                           
+##      &lt;int&gt; &lt;chr&gt;                         
+## 1        1 /rose-ground-control-1-2693541
+## 2        2 /rose-ground-control-2-2693542
+## 3        3 /rose-ground-control-3-2693543
+## 4        4 /rose-ground-control-4-2693544
+## 
+## [[2]]
+## # A tibble: 3 x 2
+##   position url                        
+##      &lt;int&gt; &lt;chr&gt;                      
+## 1        1 /rose-root-miller-1-2693526
+## 2        2 /rose-root-miller-2-2693527
+## 3        3 /rose-root-miller-3-2693531
+## 
+## [[3]]
+## # A tibble: 3 x 2
+##   position url                       
+##      &lt;int&gt; &lt;chr&gt;                     
+## 1        1 /rose-pikes-peak-1-2686288
+## 2        2 /rose-pikes-peak-2-2689166
+## 3        3 /rose-pikes-peak-3-2686289
+## 
+## [[4]]
+## https://www.rosebikes.com/bikes/mtb/dirt/the-bruce
+## 
+## [[5]]
+## https://www.rosebikes.com/bikes/mtb/cross-country/count-solo
+## 
+## [[6]]
+## # A tibble: 2 x 2
+##   position url                        
+##      &lt;int&gt; &lt;chr&gt;                      
+## 1        1 /rose-psycho-path-2-2693312
+## 2        2 /rose-psycho-path-3-2693299
+## 
+## [[7]]
+## # A tibble: 6 x 2
+##   position url                        
+##      &lt;int&gt; &lt;chr&gt;                      
+## 1        1 /rose-thrill-hill-1-2681087
+## 2        2 /rose-thrill-hill-2-2681092
+## 3        3 /rose-thrill-hill-3-2681106
+## 4        4 /rose-thrill-hill-4-2681110
+## 5        5 /rose-thrill-hill-5-2681112
+## 6        6 /rose-thrill-hill-6-2681124
+## 
+## [[8]]
+## https://www.rosebikes.com/bikes/mtb/cross-country/thrill-hill-trail
+## 
+## [[9]]
+## # A tibble: 4 x 2
+##   position url                       
+##      &lt;int&gt; &lt;chr&gt;                     
+## 1        1 /rose-soul-fire-1-2693517 
+## 2        2 /rose-soul-fire-dh-2693524
+## 3        3 /rose-soul-fire-2-2693518 
+## 4        4 /rose-soul-fire-3-2693523</code></pre>
+<pre class="r"><code>#saveRDS(bike_data_tbl, &quot;bike_data_tbl.rds&quot;)</code></pre>
+<p>What should now be documented are the following aspects. First, web scraping is a well suited method for analyzing static and well structured web pages. Because the underling HTML code can change anytime in design or for updating details, it is important to identify these changes to the web page and modify the web scraping script accordingly. Secondly, often an API is available by the service provider or organization. It is always advisable to use the API. Finally it should be mentioned that websites should not be flooded with requests. It is advisable to have some time gap between the requests so that the IP address is not blocked from accessing the website.</p>
+<hr />
+<hr />
+</div>
+</div>
+<div id="data-wrangling" class="section level1">
+<h1><span class="header-section-number">3</span> Data Wrangling</h1>
+<p>The collected “raw” data have now to be transformed into a format that is more appropriate and valuable for a variety of downstream purposes such as analytics. This process is called data wrangling and contains the cleaning and preparation for the subsequent analysis.The data transformations include such actions as extraction, reshaping, joining, splitting and combining, cleansing and filtering to create desired wrangling outputs that can be leveraged later on. The corresponding functions work with columns (features), rows (observations), groups and summarized data.</p>
+<p>The following calculations deal with the wrangling of large data sets using R’s data.table. The used data sets are freely accessible and contain information on patents registered worldwide in the past years. This includes the applicant, date, country, title, subject, ID and much more. The source is the <em>United States Patent and Trademark Office</em> (USPTO) which is intended to increase the usability and value of patent data.</p>
+<p>First, the downloaded files have to be imported:</p>
+<pre class="r"><code>## patent
+col_types_patent &lt;- list(
+  id = col_character(),
+  date = col_date(&quot;%Y-%m-%d&quot;),
+  num_claims = col_double()
+)
+
+patent_tbl &lt;- vroom(
+  file       = &quot;patent.tsv/patent.tsv&quot;, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types_patent,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+patent_tbl %&gt;% glimpse()</code></pre>
+<pre><code>## Rows: 327,014
+## Columns: 3
+## $ id         &lt;chr&gt; &quot;8621662&quot;, &quot;8621663&quot;, &quot;8621664&quot;, &quot;8621665&quot;, &quot;8621666&quot;, &quot;...
+## $ date       &lt;date&gt; 2014-01-07, 2014-01-07, 2014-01-07, 2014-01-07, 2014-01...
+## $ num_claims &lt;dbl&gt; 11, 6, 10, 18, 7, 9, 21, 19, 8, 18, 7, 15, 15, 15, 18, 7...</code></pre>
+<pre class="r"><code>## assignee
+col_types_assignee &lt;- list(
+  id = col_character(),
+  type = col_character(),
+  organization = col_character()
+)
+
+assignee_tbl &lt;- vroom(
+  file       = &quot;patent.tsv/assignee.tsv&quot;, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types_assignee,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+assignee_tbl %&gt;% glimpse()</code></pre>
+<pre><code>## Rows: 47,011
+## Columns: 3
+## $ id           &lt;chr&gt; &quot;org_004j997jM9yEdS7z4ReD&quot;, &quot;org_005hVGA5JMOZsS0xOhGa&quot;...
+## $ type         &lt;chr&gt; &quot;3&quot;, &quot;3&quot;, &quot;2&quot;, &quot;2&quot;, &quot;3&quot;, &quot;3&quot;, &quot;2&quot;, &quot;3&quot;, &quot;2&quot;, &quot;3&quot;, &quot;2&quot;,...
+## $ organization &lt;chr&gt; &quot;University of Basel&quot;, &quot;Zetkama Spólka Akcyjna&quot;, &quot;Mira...</code></pre>
+<pre class="r"><code>## patent_assignee
+col_types_patent_assignee &lt;- list(
+  patent_id = col_character(),
+  assignee_id = col_character()
+)
+
+patent_assignee_tbl &lt;- vroom(
+  file       = &quot;patent.tsv/patent_assignee.tsv&quot;, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types_patent_assignee,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+patent_assignee_tbl %&gt;% glimpse()</code></pre>
+<pre><code>## Rows: 315,910
+## Columns: 2
+## $ patent_id   &lt;chr&gt; &quot;8709412&quot;, &quot;8636251&quot;, &quot;8899346&quot;, &quot;8700141&quot;, &quot;8724986&quot;, ...
+## $ assignee_id &lt;chr&gt; &quot;org_MPhnVOTFsXybN0auC647&quot;, &quot;org_v7VisXnmZZEEUMeHhW6y&quot;,...</code></pre>
+<pre class="r"><code>## uspc
+col_types_uspc &lt;- list(
+  patent_id = col_character(),
+  mainclass_id = col_character(),
+  sequence = col_character()
+)
+
+uspc_tbl &lt;- vroom(
+  file       = &quot;patent.tsv/uspc.tsv&quot;, 
+  delim      = &quot;\t&quot;, 
+  col_types  = col_types_uspc,
+  na         = c(&quot;&quot;, &quot;NA&quot;, &quot;NULL&quot;)
+)
+uspc_tbl %&gt;% glimpse()</code></pre>
+<pre><code>## Rows: 815,743
+## Columns: 3
+## $ patent_id    &lt;chr&gt; &quot;8829273&quot;, &quot;8623780&quot;, &quot;8904894&quot;, &quot;8794165&quot;, &quot;8773920&quot;,...
+## $ mainclass_id &lt;chr&gt; &quot;435&quot;, &quot;502&quot;, &quot;368&quot;, &quot;111&quot;, &quot;365&quot;, &quot;128&quot;, &quot;709&quot;, &quot;707&quot;...
+## $ sequence     &lt;chr&gt; &quot;7&quot;, &quot;2&quot;, &quot;0&quot;, &quot;1&quot;, &quot;0&quot;, &quot;4&quot;, &quot;2&quot;, &quot;1&quot;, &quot;2&quot;, &quot;2&quot;, &quot;10&quot;...</code></pre>
+<pre class="r"><code>setDT(patent_tbl)
+setDT(assignee_tbl)
+setDT(patent_assignee_tbl)
+setDT(uspc_tbl)</code></pre>
+<hr />
+<div id="patent-dominance" class="section level2">
+<h2><span class="header-section-number">3.1</span> Patent dominance</h2>
+<p>The 10 US companies with the most assigned/granted patents:</p>
+<pre class="r"><code>a_p_a_combined &lt;- merge(x = assignee_tbl, y = patent_assignee_tbl, 
+                        by.x  = &quot;id&quot;, 
+                        by.y  = &quot;assignee_id&quot;,
+                        all.x = TRUE, 
+                        all.y = FALSE)
+
+a_p_a_combined %&gt;% glimpse()</code></pre>
+<pre><code>## Rows: 315,910
+## Columns: 4
+## $ id           &lt;chr&gt; &quot;org_004j997jM9yEdS7z4ReD&quot;, &quot;org_004j997jM9yEdS7z4ReD&quot;...
+## $ type         &lt;chr&gt; &quot;3&quot;, &quot;3&quot;, &quot;3&quot;, &quot;2&quot;, &quot;3&quot;, &quot;3&quot;, &quot;3&quot;, &quot;3&quot;, &quot;2&quot;, &quot;2&quot;, &quot;2&quot;,...
+## $ organization &lt;chr&gt; &quot;University of Basel&quot;, &quot;University of Basel&quot;, &quot;Zetkama...
+## $ patent_id    &lt;chr&gt; &quot;8728438&quot;, &quot;8921361&quot;, &quot;8857791&quot;, &quot;8845559&quot;, &quot;8815936&quot;,...</code></pre>
+<pre class="r"><code>setkey(a_p_a_combined, &quot;id&quot;)
+setorderv(a_p_a_combined, c(&quot;id&quot;, &quot;organization&quot;))
+
+a_p_a_combined %&gt;% glimpse()</code></pre>
+<pre><code>## Rows: 315,910
+## Columns: 4
+## $ id           &lt;chr&gt; &quot;org_004j997jM9yEdS7z4ReD&quot;, &quot;org_004j997jM9yEdS7z4ReD&quot;...
+## $ type         &lt;chr&gt; &quot;3&quot;, &quot;3&quot;, &quot;3&quot;, &quot;2&quot;, &quot;3&quot;, &quot;3&quot;, &quot;3&quot;, &quot;3&quot;, &quot;2&quot;, &quot;2&quot;, &quot;2&quot;,...
+## $ organization &lt;chr&gt; &quot;University of Basel&quot;, &quot;University of Basel&quot;, &quot;Zetkama...
+## $ patent_id    &lt;chr&gt; &quot;8728438&quot;, &quot;8921361&quot;, &quot;8857791&quot;, &quot;8845559&quot;, &quot;8815936&quot;,...</code></pre>
+<pre class="r"><code>us_patents &lt;- a_p_a_combined %&gt;%
+  select(1:3) %&gt;%
+  filter(type == &quot;2&quot;)%&gt;%
+  group_by(organization) %&gt;%
+  summarise(
+    count = n()
+  ) %&gt;%
+  ungroup() %&gt;%
+  arrange(desc(count)) %&gt;%
+  slice(1:10)</code></pre>
+<hr />
+</div>
+<div id="recent-patent-activity" class="section level2">
+<h2><span class="header-section-number">3.2</span> Recent patent activity</h2>
+<p>The 10 US companies with the most new granted patents for 2014:</p>
+<pre class="r"><code>a_p_a_p_combined &lt;- merge(x = patent_tbl, y = a_p_a_combined, 
+                          by.x    = &quot;id&quot;,
+                          by.y = &quot;patent_id&quot;,
+                          all.x = TRUE, 
+                          all.y = FALSE)
+
+setkey(a_p_a_p_combined, &quot;id&quot;)
+
+setorderv(a_p_a_p_combined, c(&quot;id&quot;, &quot;organization&quot;))
+
+us_patents2019 &lt;- a_p_a_p_combined %&gt;%
+  filter(type == &quot;2&quot;) %&gt;%
+  filter(date &gt;= &quot;2014-01-01&quot; &amp; date &lt;=&quot;2014-12-01&quot;)
+
+us_patents2019 %&gt;% glimpse()</code></pre>
+<pre><code>## Rows: 136,170
+## Columns: 6
+## $ id           &lt;chr&gt; &quot;8621662&quot;, &quot;8621663&quot;, &quot;8621666&quot;, &quot;8621668&quot;, &quot;8621669&quot;,...
+## $ date         &lt;date&gt; 2014-01-07, 2014-01-07, 2014-01-07, 2014-01-07, 2014-...
+## $ num_claims   &lt;dbl&gt; 11, 6, 7, 21, 19, 15, 22, 21, 20, 22, 16, 20, 11, 13, ...
+## $ id.y         &lt;chr&gt; &quot;org_aTMUEAbUvQuADfnSfudQ&quot;, &quot;org_FfZ2sonhh4RvKY8vYp2B&quot;...
+## $ type         &lt;chr&gt; &quot;2&quot;, &quot;2&quot;, &quot;2&quot;, &quot;2&quot;, &quot;2&quot;, &quot;2&quot;, &quot;2&quot;, &quot;2&quot;, &quot;2&quot;, &quot;2&quot;, &quot;2&quot;,...
+## $ organization &lt;chr&gt; &quot;Hamilton Sundstrand Space Systems International, Inc....</code></pre>
+<pre class="r"><code>us_patents2019 %&gt;%
+  group_by(organization) %&gt;%   
+  summarise(
+    sum_claims = sum(num_claims)
+  ) %&gt;%
+  ungroup() %&gt;%
+  arrange(desc(sum_claims)) %&gt;%
+  slice(1:10)</code></pre>
+<pre><code>## # A tibble: 10 x 2
+##    organization                                sum_claims
+##    &lt;chr&gt;                                            &lt;dbl&gt;
+##  1 International Business Machines Corporation     109604
+##  2 QUALCOMM Incorporated                            80010
+##  3 Google Inc.                                      50161
+##  4 Microsoft Corporation                            49918
+##  5 Apple Inc.                                       40898
+##  6 General Electric Company                         29211
+##  7 Intel Corporation                                27679
+##  8 AT&amp;T INTELLECTUAL PROPERTY I, L.P.               26761
+##  9 Hewlett-Packard Development Company, L.P.        24162
+## 10 Broadcom Corporation                             22763</code></pre>
+<hr />
+</div>
+<div id="innovation-in-tech" class="section level2">
+<h2><span class="header-section-number">3.3</span> Innovation in Tech</h2>
+<p>What is the most innovative tech sector? For the top 10 companies (worldwide) with the most patents, what are the top 5 USPTO tech main classes?</p>
+<pre class="r"><code>uspc_patents &lt;- merge(x = uspc_tbl, y = a_p_a_p_combined, 
+                      by.x = &quot;patent_id&quot;,
+                      by.y = &quot;id&quot;,
+                      all.x = TRUE, 
+                      all.y = FALSE)
+
+setkey(uspc_patents, &quot;patent_id&quot;)
+setorderv(uspc_patents, c(&quot;patent_id&quot;, &quot;organization&quot;))
+
+tech_patents &lt;- uspc_patents %&gt;%
+  filter(sequence == &quot;0&quot;) %&gt;%               # filter the data where the uspc class appears in the patent file in first place
+  filter(type == &quot;2&quot; | type == &quot;3&quot;) %&gt;%     # filter the companies
+  select(1,2,5,8) %&gt;%
+  group_by(organization) %&gt;%
+  mutate(sum_claims = sum(num_claims)) %&gt;%
+  ungroup() %&gt;%
+  arrange(desc(sum_claims))
+
+max &lt;- distinct(tech_patents, sum_claims) %&gt;%
+  sum(1:10)
+
+tech_patents %&gt;% 
+  slice(1:max) %&gt;%
+  group_by(mainclass_id) %&gt;%
+  summarise(
+    count = n()
+  ) %&gt;%
+  ungroup() %&gt;%
+  arrange(desc(count)) %&gt;%
+  slice(1:5)</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   mainclass_id count
+##   &lt;chr&gt;        &lt;int&gt;
+## 1 257          10192
+## 2 370           8341
+## 3 455           7808
+## 4 709           5587
+## 5 438           5078</code></pre>
+<ul>
+<li>257 Active solid-state devices (e.g., transistors, solid-state diodes)<br />
+</li>
+<li>370 Multiplex communications<br />
+</li>
+<li>455 Telecommunications<br />
+</li>
+<li>709 Electrical computers and digital processing systems: multicomputer data transferring</li>
+<li>438 Semiconductor device manufacturing: process</li>
+</ul>
+<hr />
+<hr />
+</div>
+</div>
+<div id="data-visualization" class="section level1">
+<h1><span class="header-section-number">4</span> Data Visualization</h1>
+<p>Data visualization is the presentation of data in a pictorial or graphical format. It refers to the techniques used to communicate data or information by encoding it as visual objects. The goal is to see analytics presented visually, in order to grasp difficult concepts or identify new patterns. In this way information can be communicated clearly and efficiently.</p>
+<hr />
+<div id="time-course-of-the-cumulative-covid-19-cases" class="section level2">
+<h2><span class="header-section-number">4.1</span> Time course of the cumulative Covid-19 cases</h2>
+<pre class="r"><code>covid_data_tbl &lt;- read_csv(&quot;https://opendata.ecdc.europa.eu/covid19/casedistribution/csv&quot;)
+
+covid_data2020_tbl &lt;- covid_data_tbl %&gt;%
+  select(1:5, 7, 10, 11, 12) %&gt;%
+  mutate(date = dmy(dateRep)) %&gt;%
+  arrange(date) %&gt;%
+  filter(month != &quot;12&quot;)  %&gt;%
+  filter(year == &quot;2020&quot;) %&gt;% 
+  filter(countriesAndTerritories %in% c(&quot;Germany&quot;, &quot;France&quot;,&quot;United_Kingdom&quot;,&quot;Spain&quot;, &quot;United_States_of_America&quot;)) %&gt;%
+  group_by(countriesAndTerritories) %&gt;%
+  mutate(cumulative_cases = cumsum(cases)) %&gt;%
+  ungroup() 
+
+#covid_data2020_tbl$dates &lt;- as.Date(covid_data2020_tbl$dateRep, &quot;%d/%m/%Y&quot;)
+
+covid_data2020_tbl %&gt;% glimpse()</code></pre>
+<pre><code>## Rows: 1,675
+## Columns: 11
+## $ dateRep                                                      &lt;chr&gt; &quot;01/01...
+## $ day                                                          &lt;dbl&gt; 1, 1, ...
+## $ month                                                        &lt;dbl&gt; 1, 1, ...
+## $ year                                                         &lt;dbl&gt; 2020, ...
+## $ cases                                                        &lt;dbl&gt; 0, 0, ...
+## $ countriesAndTerritories                                      &lt;chr&gt; &quot;Franc...
+## $ popData2019                                                  &lt;dbl&gt; 670128...
+## $ continentExp                                                 &lt;chr&gt; &quot;Europ...
+## $ `Cumulative_number_for_14_days_of_COVID-19_cases_per_100000` &lt;dbl&gt; NA, NA...
+## $ date                                                         &lt;date&gt; 2020-...
+## $ cumulative_cases                                             &lt;dbl&gt; 0, 0, ...</code></pre>
+<pre class="r"><code>covid_data2020_tbl %&gt;% #aes(x=dates, y =cumulative_cases)
+  ggplot()+
+  geom_line(aes(x = date,
+                y = cumulative_cases,
+                color = countriesAndTerritories),
+                size = 0.5) + 
+  scale_x_date(breaks = &quot;1 month&quot;, minor_breaks = &quot;1 month&quot;, date_labels = &#39;%B&#39;) + #, date_labels =c(&#39;January&#39;, &#39;February&#39;,&#39;March&#39;, &#39;April&#39;,&#39;May&#39;, &#39;June&#39;,&#39;July&#39;, &#39;August&#39;,&#39;September&#39;, &#39;October&#39;,&#39;November&#39;)) +
+  #scale_x_date(breaks = month(dates), labels =c(&#39;January&#39;, &#39;February&#39;,&#39;March&#39;, &#39;April&#39;,&#39;May&#39;, &#39;June&#39;,&#39;July&#39;, &#39;August&#39;,&#39;September&#39;, &#39;October&#39;,&#39;November&#39;)) +
+  scale_y_continuous(labels = scales::dollar_format(scale = 1e-6, 
+                                             prefix = &quot;&quot;,
+                                             suffix = &quot;M&quot;)) +
+  labs(
+    title = &quot;COVID-19 confirmed cases worldwide&quot;,
+    subtitle = &quot;As of 11/02/2020, Europe had more cases than the USA&quot;,
+    x = &quot;Year 2020&quot;,
+    y = &quot;Cumulative Cases&quot;,
+    color = &quot;Continent / Country&quot;
+  ) + 
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1),
+    legend.position = &quot;bottom&quot;,
+    plot.title = element_text(face = &quot;bold&quot;),
+    axis.title = element_text(face = &quot;bold&quot;)
+  ) +
+  coord_cartesian(ylim = c(0, 10000000))</code></pre>
+<p><img src="journal_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<hr />
+</div>
+<div id="distribution-of-the-mortality-rate" class="section level2">
+<h2><span class="header-section-number">4.2</span> Distribution of the mortality rate</h2>
+<pre class="r"><code>covid_dataworld_tbl &lt;- covid_data_tbl %&gt;%
+  select(1:4, 6:10) %&gt;%
+  mutate(across(countriesAndTerritories, str_replace_all, &quot;_&quot;, &quot; &quot;)) %&gt;%
+  mutate(countriesAndTerritories = case_when(
+    countriesAndTerritories == &quot;United Kingdom&quot; ~ &quot;UK&quot;,
+    countriesAndTerritories == &quot;United States of America&quot; ~ &quot;USA&quot;,
+    countriesAndTerritories == &quot;Czechia&quot; ~ &quot;Czech Republic&quot;,
+    TRUE ~ countriesAndTerritories
+  )) %&gt;%
+  filter(year == &quot;2020&quot;) %&gt;%
+  filter(month != &quot;12&quot;) %&gt;%
+  group_by(countriesAndTerritories) %&gt;%
+  summarize(countryDeaths = sum(deaths)) %&gt;%
+  ungroup()
+
+covid_dataworld_tbl$countryDeaths &lt;- covid_dataworld_tbl$countryDeaths *(12/11)
+
+covid_deaths_tbl &lt;- covid_dataworld_tbl %&gt;%
+  left_join(covid_data_tbl) %&gt;%
+  select(1,2,11) %&gt;%
+  group_by(countriesAndTerritories) %&gt;%
+  distinct() %&gt;%
+  mutate(Mortality_Rate = (countryDeaths / popData2019) * 100) %&gt;%
+  select(1,4) 
+
+world &lt;- map_data(&quot;world&quot;)
+
+covid_deaths_tbl %&gt;%
+  ggplot() +
+  geom_map(data = covid_deaths_tbl,
+           map = world,
+           aes(map_id = countriesAndTerritories, fill= Mortality_Rate),
+           size=0.05,
+           colour=&quot;black&quot; ) +
+  scale_y_continuous(labels = scales::percent) +
+  expand_limits(x = world$long, y = world$lat)+
+  coord_fixed() +
+  scale_fill_continuous(low = &#39;red&#39;, high = &#39;black&#39;) +
+  theme(axis.ticks = element_blank(),
+        axis.text = element_blank(),
+        axis.title = element_blank(),
+        legend.position = &quot;right&quot;,
+        plot.title = element_text(face = &quot;bold&quot;)) +
+  labs(
+    title = &quot;Confirmed COVID-19 deaths relative to the size of the population&quot;,
+    subtitle = &quot;More than 1.2 Million confirmed COVID-19 deaths worldwide&quot;,
+    caption = &quot;Date: 12/01/2020&quot;,
+    color = &quot;Mortality Rate&quot;
+  )</code></pre>
+<p><img src="journal_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

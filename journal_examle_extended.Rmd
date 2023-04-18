@@ -1,0 +1,68 @@
+---
+title: "Journal (reproducible report)"
+author: "Joschka Schwarz"
+date: "2020-11-05"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    collapsed: false
+    number_sections: true
+    toc_depth: 3
+    #code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message=FALSE,warning=FALSE, cache=TRUE)
+```
+
+**IMPORTANT:** You can delete everything in here and start fresh. You might want to start by not deleting anything above this line until you know what that stuff is doing.
+
+This is an `.Rmd` file. It is plain text with special features. Any time you write just like this, it will be compiled to normal text in the website. If you put a \# in front of your text, it will create a top level-header.
+
+# My First Assignmend (Image)
+
+Last compiled: `r Sys.Date()`
+
+```{r, fig.width=10, fig.height=7}
+library(ggplot2)
+library(scales)
+ggplot(diamonds) + 
+    geom_point(aes(x = carat, y =  price)) + 
+    scale_y_continuous(labels = dollar_format(suffix = " €", prefix = ""))
+```
+
+# My Second Assignmend (List, Data.Frame)
+
+```{r}
+library(httr)
+library(glue)
+library(jsonlite)
+library(magrittr)
+
+resp <- GET("https://swapi.dev/api/people/1/")
+
+# Wrapped into a function
+sw_api <- function(path) {
+  url <- modify_url(url = "https://swapi.dev", path = glue("/api{path}"))
+  resp <- GET(url)
+  stop_for_status(resp) # automatically throws an error if a request did not succeed
+}
+
+resp <- sw_api("/people/1")
+resp %>% 
+    .$content %>% 
+    rawToChar() %>% 
+    fromJSON()
+```
+
+
+# My third assignment 
+
+```{r}
+library(dplyr)
+mtcars %>% 
+  arrange(desc(disp)) %>% 
+  select(mpg, disp, drat) %>%
+  head(2)
+```
